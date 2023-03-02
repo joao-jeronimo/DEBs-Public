@@ -1,0 +1,5 @@
+Package: Python-3.8-Odoo-Complete
+Version: 3.8.15
+Architecture: amd64
+Maintainer: João Jerónimo <joao.jeronimo.pro@gmail.com>
+Description: Complete Python package for use with Odoo in any debian-based system.
