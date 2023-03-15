@@ -1,4 +1,4 @@
-Package: Odoo13
+Package: Odoo13-Core
 Version: 13.0
 Depends: git, Python-3.8-complete
 Architecture: any
