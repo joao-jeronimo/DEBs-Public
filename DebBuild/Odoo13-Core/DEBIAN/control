@@ -1,6 +1,6 @@
-Package: Odoo13-Core
+Package: odoo13-core
 Version: 13.0
-Depends: git, Python-3.8-complete
+Depends: git, python-3.8-complete
 Architecture: all
 Maintainer: João Jerónimo <joao.jeronimo.pro@gmail.com>
 Description: Odoo ERP, packaged for use with AutoERP.
