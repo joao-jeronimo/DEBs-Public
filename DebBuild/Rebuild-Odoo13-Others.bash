@@ -9,7 +9,7 @@ for srcdir in   /odoo/releases/13.0/addons/analytic*                    \
                 /odoo/releases/13.0/addons/[bcdefghijklmnopqrstuv]*     \
                 /odoo/releases/13.0/addons/[xyz]*
 do
-    rsynch_full_path "$srcdir" "$DEBNAME"/"$srcdir"
+    rsynch_full_path "$srcdir" "$DEBNAME"/
 done
 
 dpkg-deb --build --root-owner-group "$DEBNAME"/ ../DEBs/Odoo13-Others-2023.01.11.deb
