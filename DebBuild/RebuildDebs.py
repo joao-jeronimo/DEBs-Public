@@ -27,7 +27,7 @@ def build_deb_from_files(debfile, packagename, version, maintainer, dependencies
             dst = (packagename + os.path.sep),
             )
     # Generate the control file:
-    with open( os.path.join(packagename, "DEBIAN", "control") as outcontrol:
+    with open( os.path.join(packagename, "DEBIAN", "control"), "w" ) as outcontrol:
         outcontrol.write(control_file_template % {
             'pkgname'           : packagename,
             'version'           : version,
@@ -49,7 +49,7 @@ build_deb_from_files(
     debfile         = "../DEBs/venv-python38-odoo13-base-2023-03-2023.deb",
     packagename     = "venv-python38-odoo13-base",
     version         = "2023.03.16",
-    maintainer      = "Jo„o JerÛnimo <joao.jeronimo.pro@gmail.com>",
+    maintainer      = "Jo√£o Jer√≥nimo <joao.jeronimo.pro@gmail.com>",
     dependencies    = ["python-3.8-complete"],
     description     = "Odoo ERP, packaged for use with AutoERP.",
     pathlist        = [
