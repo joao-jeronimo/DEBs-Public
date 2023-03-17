@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import subprocess, os, glob
 
 control_file_template = (
@@ -13,21 +14,24 @@ def rsynch_full_path(src, dst):
     # Calculate the destination filepath so that we can mkdir it:
     dstdir = os.path.dirname(dst)
     # Mksure the dir exists:
-    subprocess.run(['mkdir', '-p', dstdir])
+    subprocess.check_call(['mkdir', '-p', dstdir])
     # Rsync asked stuff:
-    subprocess.run(['rsync', '-rlt', '--delete', '--itemize-changes', '-Rv', src, dst])
+    subprocess.check_call(['rsync', '-rlt', '--delete', '--itemize-changes', '-Rv', src, dst])
 
 def build_deb_from_files(debfile, packagename, version, maintainer, dependencies, description, pathlist):
     # Mksure the dir exists:
-    subprocess.run(['mkdir', '-p', packagename])
+    subprocess.check_call(['mkdir', '-p', packagename])
     # Copy the future package contentes theire:
     for onepath in pathlist:
         rsynch_full_path(
             src = onepath,
             dst = (packagename + os.path.sep),
             )
+    # Control file name:
+    controlfile_name = os.path.join(packagename, "DEBIAN", "control")
+    subprocess.check_call(['mkdir', '-p', os.path.dirname(controlfile_name)])
     # Generate the control file:
-    with open( os.path.join(packagename, "DEBIAN", "control"), "w" ) as outcontrol:
+    with open( controlfile_name, "w" ) as outcontrol:
         outcontrol.write(control_file_template % {
             'pkgname'           : packagename,
             'version'           : version,
@@ -37,7 +41,7 @@ def build_deb_from_files(debfile, packagename, version, maintainer, dependencies
             'description'       : description,
             })
     # Invoke dpkg-deb:
-    subprocess.run([
+    subprocess.check_call([
         'dpkg-deb', '--build', '--root-owner-group',
         packagename, debfile, ])
 
@@ -53,11 +57,11 @@ build_deb_from_files(
     dependencies    = ["python-3.8-complete"],
     description     = "Odoo ERP, packaged for use with AutoERP.",
     pathlist        = [
-        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/bin"
-        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/include"
-        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/pyvenv.cfg"
-        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/share"
-        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/lib64"
+        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/bin",
+        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/include",
+        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/pyvenv.cfg",
+        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/share",
+        "/odoo/VirtualEnvs/Env_Python3.8_Odoo13.0/lib64",
         ],
     )
 
@@ -99,7 +103,7 @@ for (packaname, packpats) in venv_packages:
             )
         # Shell-expand the pattern:
         alle = glob.glob(fullpat)
-    modlist.append(alle)
+    modlist.extend(alle)
     # A name for the package:
     packagename = "venv-python38-odoo13-%s" % packaname
     # Build the package:
