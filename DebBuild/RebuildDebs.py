@@ -103,7 +103,7 @@ for (packaname, packpats) in venv_packages:
             )
         # Shell-expand the pattern:
         alle = glob.glob(fullpat)
-    modlist.extend(alle)
+        modlist.extend(alle)
     # A name for the package:
     packagename = "venv-python38-odoo13-%s" % packaname
     # Build the package:
