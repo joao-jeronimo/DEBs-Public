@@ -1,6 +1,6 @@
 Package: venv-python38-odoo13-base
 Version: 13.0
-Depends: git, python-3.8-complete
+Depends: python-3.8-complete
 Architecture: all
 Maintainer: João Jerónimo <joao.jeronimo.pro@gmail.com>
 Description: Odoo ERP, packaged for use with AutoERP.
