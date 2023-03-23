@@ -9,3 +9,4 @@ untared-*.mak
 src/
 builds/
 DebBuild/*/odoo
+DEBs/

@@ -72,7 +72,7 @@ venv_packages = [
         'decorator', 'astor', 'attr', 'attrs', 'wheel', 'setuptools', 'stdnum',
         ]),
     ('tiny', [
-        '__pycache__', 'decorator.py', 'appdirs.py', 'cached_property', 'docopt.py', 'dot_parser.py', 'ldapurl.py', 'ldif.py',
+        '__pycache__', 'appdirs.py', 'cached_property', 'docopt.py', 'dot_parser.py', 'ldapurl.py', 'ldif.py',
         'pydot.py', 'polib', 'polib.py', 'pyparsing.py', 'pysassc.py', 'six', 'six.py', 'sass.py', 'sassc.py', 'sasstests.py', 'samples',
         'pycparser', 'appdirs', 'bs4', 'libpasteurize', 'lxml', 'mako', 'markupsafe', 'mock', 'past', 'pbr', 'tests',
         ]),
