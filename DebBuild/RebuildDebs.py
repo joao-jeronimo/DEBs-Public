@@ -50,27 +50,17 @@ venv_packages = [
         ]),
     ]
 
-for (packaname, packpats) in venv_packages:
-    modlist = []
-    for packamods in packpats:
-        # Build a pattern:
-        fullpat = os.path.join(os.path.sep,
-            "odoo", "VirtualEnvs",
-            "Env_Python3.8_Odoo13.0", "lib",
-            "python3.8", "site-packages", packamods+"*",
-            )
-        # Shell-expand the pattern:
-        alle = glob.glob(fullpat)
-        modlist.extend(alle)
-    # A name for the package:
-    packagename = "venv-python38-odoo13-%s" % packaname
-    # Build the package:
-    build_deb_from_files(
-        debfile         = "../DEBs/"+packagename+"-2023-03.16.deb",
-        packagename     = packagename,
-        version         = "2023.03.16",
-        maintainer      = "João Jerónimo <joao.jeronimo.pro@gmail.com>",
-        dependencies    = ["python-3.8-complete"],
-        description     = "Odoo ERP, packaged for use with AutoERP.",
-        pathlist        = modlist,
-        )
+
+build_set_of_debs_from_patterns(
+    debs_path           = "../DEBs/",
+    package_base_name   = "venv-python38-odoo13",
+    version             = "2023.03.16",
+    maintainer          = "João Jerónimo <joao.jeronimo.pro@gmail.com>",
+    dependencies        = ["python-3.8-complete"],
+    description         = "Odoo ERP, packaged for use with AutoERP.",
+    set_basedir         = os.path.join(
+            os.path.sep,
+            "odoo", "VirtualEnvs", "Env_Python3.8_Odoo13.0",
+            "lib", "python3.8", "site-packages", ),
+    patterns            = venv_packages,
+    )

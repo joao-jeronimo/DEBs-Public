@@ -43,3 +43,32 @@ def build_deb_from_files(debfile, packagename, version, maintainer, dependencies
     subprocess.check_call([
         'dpkg-deb', '--build', '--root-owner-group',
         packagename, debfile, ])
+
+def build_set_of_debs_from_patterns(debs_path, package_base_name, version, maintainer, dependencies, description,
+        set_basedir, patterns, post_str=None):
+    """
+    Maybe you have a big directory that youwant to split into several DEB files. This functions helps in that.
+    """
+    if not post_str:
+        post_str = version.replace('.', '-')
+    for (packaname, packpats) in patterns:
+        modlist = []
+        for packamods in packpats:
+            # Build a pattern:
+            fullpat = os.path.join(set_basedir, packamods+"*")
+            # Shell-expand the pattern:
+            alle = glob.glob(fullpat)
+            modlist.extend(alle)
+        # A name for the package:
+        packagename = "%s-%s" % ( package_base_name, packaname, )
+        debname = os.path.join( debs_path, packagename+"-"+post_str+".deb" )
+        # Build the package:
+        build_deb_from_files(
+            debfile         = debname,
+            packagename     = packagename,
+            version         = version,
+            maintainer      = maintainer,
+            dependencies    = dependencies,
+            description     = description,
+            pathlist        = modlist,
+            )
