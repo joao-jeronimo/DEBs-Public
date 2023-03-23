@@ -34,7 +34,7 @@ def build_deb_from_files(debfile, packagename, version, maintainer, dependencies
         outcontrol.write(control_file_template % {
             'pkgname'           : packagename,
             'version'           : version,
-            'dependencies'      : " ".join(dependencies),
+            'dependencies'      : ", ".join(dependencies),
             'arch'              : "all",
             'maintainer'        : maintainer,
             'description'       : description,
