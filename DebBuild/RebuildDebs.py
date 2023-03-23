@@ -67,28 +67,29 @@ build_deb_from_files(
 
 venv_packages = [
     ('essentials', [
-        '_cffi_backend.cpython', '_distutils_hack', '_ldap.cpython', '_sass.cpython', 'cffi', 'pip', 'dateutil', 'python_dateutil',
-        'python_ldap', 'python_stdnum', 'future', 'libfuturize', 'distutils', 'greenlet.cpython', 'docutils', 'pyparsing', 'greenlet',
-        'decorator', 'astor', 'attr', 'attrs', 'wheel', 'setuptools', 'stdnum',
+        '_cffi_backend.cpython', '_distutils_hack', 'cffi', 'pip', 'dateutil', 'python_dateutil',
+        'python_stdnum', 'future', 'libfuturize', 'distutils', 'docutils', 'pyparsing', 'greenlet',
+        'decorator', 'astor', 'attr', 'wheel', 'setuptools', 'stdnum',
         ]),
     ('tiny', [
-        '__pycache__', 'appdirs.py', 'cached_property', 'docopt.py', 'dot_parser.py', 'ldapurl.py', 'ldif.py',
-        'pydot.py', 'polib', 'polib.py', 'pyparsing.py', 'pysassc.py', 'six', 'six.py', 'sass.py', 'sassc.py', 'sasstests.py', 'samples',
-        'pycparser', 'appdirs', 'bs4', 'libpasteurize', 'lxml', 'mako', 'markupsafe', 'mock', 'past', 'pbr', 'tests',
+        '__pycache__', 'cached_property', 'dot_parser', 'ldif',
+        'polib', 'pysassc', 'six', 'sass', 'libsass', '_sass.cpython', 'samples',
+        'pycparser', 'appdirs', 'bs4', 'libpasteurize', 'lxml', 'mock', 'past', 'pbr', 'tests',
         ]),
     ('networking', [
-        'Werkzeug', 'cachetools', 'certifi', 'GitPython', 'Jinja2', 'PyNaCl', 'cryptography', 'bcrypt', 'beautifulsoup4',
-        'pymssql', 'pymssql.libs', 'pyserial', 'pysftp', 'odoo_client_lib', 'odoo_csv_tools', 'odoo_import_export_client', 'odoolib',
-        'git', 'gitdb','psycopg2', 'pyasn1',  'pyasn1_modules', 'nacl', 'requests', 'requests_toolbelt', 'sassutils', 'serial', 'smmap',
-        'unicodecsv', 'unidecode', 'urllib3', 'usb', 'vatnumber', 'vobject', 'werkzeug', 'zeep', 'psutil', 'pyusb', 'slapdtest', 'soupsieve',
-        'paramiko', 'passlib', 'sqlparse', 'pytz', 'gevent',  'idna', 'isodate', 'jinja2', 'ldap', 'libsass',
+        'Werkzeug', 'werkzeug', 'cachetools', 'certifi', 'GitPython', 'Jinja2', 'jinja2', 'PyNaCl', 'nacl', 'cryptography', 'bcrypt', 'beautifulsoup4',
+        'pymssql', 'pyserial', 'pysftp', 'odoo_client_lib', 'odoo_csv_tools', 'odoo_import_export_client', 'odoolib',
+        'git', 'psycopg2', 'pyasn1',  'requests', 'serial', 'smmap',
+        'unicodecsv', 'unidecode', 'Unidecode', 'urllib3', 'usb', 'pyusb', 'vatnumber', 'vobject', 'zeep', 'psutil', 'slapdtest', 'soupsieve',
+        'paramiko', 'passlib', 'sqlparse', 'pytz', 'gevent',  'idna', 'isodate', 'ldap', 'python_ldap', '_ldap',
         ]),
     ('i18n', [
         'pkg_resources', 'chardet', 'Babel', 'babel', 'num2words',
         ]),
     ('media', [
-        'PIL', 'Pillow', 'PyPDF2', 'Pygments', 'Unidecode','XlsxWriter', 'defusedxml',  'docopt', 'ebaysdk', 'ezodf', 'ofxparse',
-        'pydot', 'pygments', 'xlrd', 'xlsxwriter', 'xlutils', 'xlwt', 'qrcode', 'reportlab', 'Mako', 'MarkupSafe', 
+        'PIL', 'Pillow', 'PyPDF2', 'Pygments', 'pygments', 'XlsxWriter', 'xlsxwriter', 'xlutils', 'xlwt', 'defusedxml',
+        'docopt', 'ebaysdk', 'ezodf', 'ofxparse', 'pydot', 'xlrd', 'qrcode', 'reportlab',
+        'Mako', 'mako', 'markupsafe', 'MarkupSafe',
         ]),
     ]
 
