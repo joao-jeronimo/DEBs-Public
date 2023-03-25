@@ -21,23 +21,20 @@ def expand_src_tarball(tarballname, extension):
     tarballname     Omit the ".tar.?z" extension here
     extension       "tar.gz", "tar.bz2", "tar.xz", etc.
     """
-    tarball_filename = (tarballname+'.'+extension)
-    print("== Expanding %s . . ." % tarball_filename)
     # CWD for subprocess, relative to script:
     srcpath = os.path.join(os.path.pardir, 'builds', 'src', )
     # Paths relative to CWD:
     #(none)
     # Other params:
-    if extension == 'tar':
-        flags = "xvf"
-    elif extension == 'tar.gz':
-        flags = "xzvf"
-    elif extension == 'tar.bz2':
-        flags = "xjvf"
-    elif extension == 'tar.xz':
-        flags = "xJvf"
-    else:
-        raise NotImplementedError()
+    if extension == 'tar':          flags = "xvf"
+    elif extension == 'tar.gz':     flags = "xzvf"
+    elif extension == 'tar.bz2':    flags = "xjvf"
+    elif extension == 'tar.xz':     flags = "xJvf"
+    else:                           raise NotImplementedError()
+    tarball_filename = (tarballname+'.'+extension)
+    # Prints:
+    print("== Expanding %s . . ." % tarball_filename)
+    # Run command(s):
     subprocess.run(
         cwd = srcpath,
         args = [
@@ -47,11 +44,20 @@ def expand_src_tarball(tarballname, extension):
         )
 
 def configure_tarball(tarballname, prefix, configflags=[]):
+    # CWD for subprocess, relative to script:
     builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
+    # Paths relative to CWD:
+    configure_path = os.path.join(os.path.pardir, 'src', 'configure', )
+    # Other params:
+    prefix_spec = ('--prefix=%s' % prefix)
+    # Prints:
+    print("== Running %s %s . . ." % ( os.path.join(builddir, configure_path), prefix_spec, ) )
+    # Run command(s):
+    os.makedirs(builddir, exist_ok=True)
     subprocess.check_output(
         cwd = builddir,
         args = [
-            os.path.join(builddir, 'configure'), ('--prefix=%s' % prefix),
+            configure_path, prefix_spec,
             *configflags,
             ],
         )
