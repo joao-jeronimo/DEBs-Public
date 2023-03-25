@@ -4,6 +4,24 @@ class ConfigureError(Exception):
     pass
 
 #####################################################################
+##### Instaling build dependencies:                          ########
+#####################################################################
+def apt_install_package(*packages):
+    subprocess.run(
+        args = [
+            'sudo',
+            'apt-get', 'install', *packages,
+            ],
+        check = True,)
+def apt_install_build_deps_for(*packages):
+    subprocess.run(
+        args = [
+            'sudo',
+            'apt-get', 'build-dep', *packages,
+            ],
+        check = True,)
+
+#####################################################################
 ##### Making build directories and building programs:        ########
 #####################################################################
 def mkbuilddirs():
