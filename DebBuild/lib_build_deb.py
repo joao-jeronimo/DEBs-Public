@@ -144,15 +144,7 @@ def rsynch_full_path(src, dst):
     # Rsync asked stuff:
     subprocess.check_call(['rsync', '-rlt', '--delete', '--itemize-changes', '-Rv', src, dst])
 
-def build_deb_from_files(debfile, packagename, version, maintainer, dependencies, description, pathlist):
-    # Mksure the dir exists:
-    subprocess.check_call(['mkdir', '-p', packagename])
-    # Copy the future package contentes theire:
-    for onepath in pathlist:
-        rsynch_full_path(
-            src = onepath,
-            dst = (packagename + os.path.sep),
-            )
+def build_deb(debfile, packagename, version, maintainer, dependencies, description):
     # Control file name:
     controlfile_name = os.path.join(packagename, "DEBIAN", "control")
     subprocess.check_call(['mkdir', '-p', os.path.dirname(controlfile_name)])
@@ -170,6 +162,18 @@ def build_deb_from_files(debfile, packagename, version, maintainer, dependencies
     subprocess.check_call([
         'dpkg-deb', '--build', '--root-owner-group',
         packagename, debfile, ])
+
+def build_deb_from_files(debfile, packagename, version, maintainer, dependencies, description, pathlist):
+    # Mksure the dir exists:
+    subprocess.check_call(['mkdir', '-p', packagename])
+    # Copy the future package contentes theire:
+    for onepath in pathlist:
+        rsynch_full_path(
+            src = onepath,
+            dst = (packagename + os.path.sep),
+            )
+    # Config and build the DEB:
+    build_deb(debfile, packagename, version, maintainer, dependencies, description)
 
 def build_set_of_debs_from_patterns(debs_path, package_base_name, version, maintainer, dependencies, description,
         set_basedir, patterns, post_str=None):
