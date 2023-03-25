@@ -66,9 +66,10 @@ def expand_src_tarball(tarballname, extension):
         check = True,
         )
 
-def configure_tarball(tarballname, prefix, configflags=[]):
+def configure_tarball(tarballname, prefix, configflags=[], insource=False):
     # CWD for subprocess, relative to script:
-    builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
+    if insource:    builddir = os.path.join(os.path.pardir, 'builds', 'src', tarballname, )
+    else:           builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
     # Paths relative to CWD:
     configure_path = os.path.join(os.path.pardir, os.path.pardir, 'src', tarballname, 'configure', )
     # Other params:
@@ -87,18 +88,36 @@ def configure_tarball(tarballname, prefix, configflags=[]):
         )
     # configure may end in error but stiff return 0, so check if the mkefile was created:
     if not os.path.isfile(os.path.join(builddir, 'Makefile')):
-        raise ConfigureError("Error running %s." % " ".join([configure_path, prefix_spec, *configflags, ]))
+        raise ConfigureError("Error running «%s»: no Makefile created" % " ".join([configure_path, prefix_spec, *configflags, ]))
 
-def build_tarball(tarballname):
-    builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
+def build_tarball(tarballname, insource=True):
+    # CWD for subprocess, relative to script:
+    if insource:    builddir = os.path.join(os.path.pardir, 'builds', 'src', tarballname, )
+    else:           builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
+    # Paths relative to CWD:
+    #(none)
+    # Other params:
+    #(none)
+    # Prints:
+    print("== Building . . .")
+    # Run command(s):
     subprocess.run(
         cwd = builddir,
         args = [ 'make', '-j3', ],
         check = True,
         )
 
-def install_tarball(tarballname, destination):
-    builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
+def install_tarball(tarballname, destination, insource=True):
+    # CWD for subprocess, relative to script:
+    if insource:    builddir = os.path.join(os.path.pardir, 'builds', 'src', tarballname, )
+    else:           builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
+    # Paths relative to CWD:
+    #(none)
+    # Other params:
+    #(none)
+    # Prints:
+    print("== Installing . . .")
+    # Run command(s):
     subprocess.run(
         cwd = builddir,
         args = [ 'make', ('DESTDIR=%s' % destination), 'install', ],
