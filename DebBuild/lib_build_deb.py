@@ -1,5 +1,8 @@
 import subprocess, os, glob
 
+class ConfigureError(Exception):
+    pass
+
 #####################################################################
 ##### Making build directories and building programs:        ########
 #####################################################################
@@ -64,6 +67,9 @@ def configure_tarball(tarballname, prefix, configflags=[]):
             ],
         check = True,
         )
+    # configure may end in error but stiff return 0, so check if the mkefile was created:
+    if not os.path.isfile(os.path.join(builddir, 'Makefile')):
+        raise ConfigureError("Error running %s." % " ".join([configure_path, prefix_spec, *configflags, ]))
 
 def build_tarball(tarballname):
     builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
