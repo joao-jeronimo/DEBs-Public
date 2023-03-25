@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+**/._*
+**/.DS_Store
+
+tarballs/
+untared-*.mak
+src/
+builds/
+DebBuild/*/usenet
+DEBs/
