@@ -3,7 +3,8 @@ import os, glob, subprocess
 from lib_build_deb import *
 
 NO_REBUILD = True
-NO_REDEB = True
+NO_RETREE = True
+NO_REDEB = False
 
 ############################################################################
 ##### InterNetNews:            #############################################
@@ -26,9 +27,10 @@ if not NO_REBUILD:
     configure_tarball('inn-2.7.0', '/UseNet/inn2', insource=True, configflags=['--with-perl', '--with-python'])
     build_tarball('inn-2.7.0', insource=True)
 
-if not NO_REDEB:
+if not NO_RETREE:
     # Fake-installing:
     install_tarball('inn-2.7.0', 'usenet-inn2/', insource=True)
+if not NO_REDEB:
     # Delete unneeded files:
     if os.path.exists('usenet-inn2/UseNet/inn2/etc/readers.conf'):
         os.remove('usenet-inn2/UseNet/inn2/etc/readers.conf')
@@ -40,6 +42,7 @@ if not NO_REDEB:
         maintainer      = "João Jerónimo <joao@uniaolisboa-cgtp.pt>",
         dependencies    = [
             "libgd-perl",
+            "libpython3.9",
             ],
         description     = "InterNetNews 2",
         )

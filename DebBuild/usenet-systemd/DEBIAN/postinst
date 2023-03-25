@@ -1,3 +1,0 @@
-invoke-rc.d usenet-inn2 start || exit $?
-
-exit 0
