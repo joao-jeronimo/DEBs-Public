@@ -4,21 +4,30 @@ import subprocess, os, glob
 ##### Making build directories and building programs:        ########
 #####################################################################
 def mkbuilddirs():
-    os.makedirs("../builds/src")
-    os.makedirs("../builds/build")
-    os.makedirs("../builds/installed")
+    os.makedirs("../builds/src", exist_ok=True)
+    os.makedirs("../builds/build", exist_ok=True)
+    os.makedirs("../builds/installed", exist_ok=True)
 
 def get_src_tarball(url):
+    print("== Downloading %s . . ." % url)
     out_filename = os.path.basename(url)
     subprocess.check_output([
         'wget', '-c', url,
-        '-O', os.path.join(os.path.pardir, 'src', out_filename, ])
+        '-O', os.path.join(os.path.pardir, 'builds', 'src', out_filename),
+        ])
 
 def expand_src_tarball(tarballname, extension):
     """
     tarballname     Omit the ".tar.?z" extension here
     extension       "tar.gz", "tar.bz2", "tar.xz", etc.
     """
+    tarball_filename = (tarballname+'.'+extension)
+    print("== Expanding %s . . ." % tarball_filename)
+    # CWD for subprocess, relative to script:
+    srcpath = os.path.join(os.path.pardir, 'builds', 'src', )
+    # Paths relative to CWD:
+    #(none)
+    # Other params:
     if extension == 'tar':
         flags = "xvf"
     elif extension == 'tar.gz':
@@ -29,15 +38,16 @@ def expand_src_tarball(tarballname, extension):
         flags = "xJvf"
     else:
         raise NotImplementedError()
-    subprocess.check_output(
-        cwd = os.path.join(os.path.pardir, 'builds', ]),
+    subprocess.run(
+        cwd = srcpath,
         args = [
-            'tar', flags, os.path.join(os.path.pardir, 'builds', tarballname+'.'+extension,
+            'tar', flags, tarball_filename,
             ],
+        check = True,
         )
 
 def configure_tarball(tarballname, prefix, configflags=[]):
-    builddir = os.path.join(os.path.pardir, 'builds', tarballname, ])
+    builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
     subprocess.check_output(
         cwd = builddir,
         args = [
@@ -47,14 +57,14 @@ def configure_tarball(tarballname, prefix, configflags=[]):
         )
 
 def build_tarball(tarballname):
-    builddir = os.path.join(os.path.pardir, 'builds', tarballname, ])
+    builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
     subprocess.check_output(
         cwd = builddir,
         args = [ 'make', '-j3', ],
         )
 
 def install_tarball(tarballname, destination):
-    builddir = os.path.join(os.path.pardir, 'builds', tarballname, ])
+    builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
     subprocess.check_output(
         cwd = builddir,
         args = [ 'make', ('DESTDIR=%s' % destination), 'install', ],
