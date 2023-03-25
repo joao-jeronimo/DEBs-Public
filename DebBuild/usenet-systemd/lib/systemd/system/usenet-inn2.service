@@ -1,0 +1,20 @@
+[Unit]
+Description=INN news server
+After=network.target
+[Service]
+User=news
+Group=news
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+PIDFile=/opt/inn2/run/innd.pid
+RemainAfterExit=yes
+SuccessExitStatus=5 6
+ExecStart=/UseNet/inn2/bin/rc.news start
+ExecStop=/UseNet/inn2/bin/rc.news stop
+#ExecReload=/etc/init.d/inn2 reload
+[Install]
+WantedBy=multi-user.target

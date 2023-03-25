@@ -236,6 +236,6 @@ def publish_files(filepath, sshhost, remotedir="/var/www/html/debian/"):
         localpath = filepath,
         remotepath = os.path.join(remotedir, os.path.basename(filepath)),
         )
-    ssh_client.exec_command('dpkg-scanpackages -m %(mirrorpath)s > %(mirrorpath)s/Packages' % {
+    ssh_client.exec_command('cd %(mirrorpath)s ; dpkg-scanpackages -m . > %(mirrorpath)s/Packages' % {
         'mirrorpath'    : remotedir,
         })

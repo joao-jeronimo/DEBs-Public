@@ -1,0 +1,2 @@
+systemctl enable usenet-inn2.service
+systemctl start usenet-inn2.service

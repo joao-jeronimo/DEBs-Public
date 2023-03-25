@@ -5,10 +5,10 @@ from lib_build_deb import *
 NO_REBUILD = True
 NO_REDEB = True
 
+############################################################################
+##### InterNetNews:            #############################################
+############################################################################
 if not NO_REBUILD:
-    ############################################################################
-    ############################################################################
-    ############################################################################
     mkbuilddirs()
     get_src_tarball('https://archives.eyrie.org/software/inn/inn-2.7.0.tar.gz')
     expand_src_tarball('inn-2.7.0', 'tar.gz')
@@ -28,11 +28,11 @@ if not NO_REBUILD:
 
 if not NO_REDEB:
     # Fake-installing:
-    install_tarball('inn-2.7.0', 'Usenet-inn2/', insource=True)
+    install_tarball('inn-2.7.0', 'usenet-inn2/', insource=True)
     # Build control file and the DEB file:
     build_deb(
-        debfile         = "../DEBs/Usenet-inn2-2.7.0.deb",
-        packagename     = "Usenet-inn2",
+        debfile         = "../DEBs/usenet-inn2-2.7.0.deb",
+        packagename     = "usenet-inn2",
         version         = "2.7.0",
         maintainer      = "João Jerónimo <joao@uniaolisboa-cgtp.pt>",
         dependencies    = [
@@ -40,4 +40,22 @@ if not NO_REDEB:
             ],
         description     = "InterNetNews 2",
         )
-publish_files("../DEBs/Usenet-inn2-2.7.0.deb", "jj@10.74.74.41",)
+publish_files("../DEBs/usenet-inn2-2.7.0.deb", "jj@10.74.74.41",)
+
+
+############################################################################
+##### Systemd and config files:            #################################
+############################################################################
+if not NO_REDEB:
+    # Build control file and the DEB file:
+    build_deb(
+        debfile         = "../DEBs/usenet-systemd-2.7.0.deb",
+        packagename     = "usenet-systemd",
+        version         = "2.7.0",
+        maintainer      = "João Jerónimo <joao@uniaolisboa-cgtp.pt>",
+        dependencies    = [
+            "usenet-inn2",
+            ],
+        description     = "InterNetNews 2",
+        )
+publish_files("../DEBs/usenet-systemd-2.7.0.deb", "jj@10.74.74.41",)

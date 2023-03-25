@@ -8,5 +8,5 @@ tarballs/
 untared-*.mak
 src/
 builds/
-DebBuild/Usenet-inn2/UseNet/
+DebBuild/usenet-inn2/UseNet/
 DEBs/

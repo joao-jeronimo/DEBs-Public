@@ -1,0 +1,5 @@
+chown news:news -Rc /UseNet/
+usermod -d /UseNet/ news
+
+chown root:root /UseNet/inn2/bin/auth/passwd/ckpasswd
+chmod ug+s /UseNet/inn2/bin/auth/passwd/ckpasswd
