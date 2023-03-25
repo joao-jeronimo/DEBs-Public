@@ -1,5 +1,68 @@
 import subprocess, os, glob
 
+#####################################################################
+##### Making build directories and building programs:        ########
+#####################################################################
+def mkbuilddirs():
+    os.makedirs("../builds/src")
+    os.makedirs("../builds/build")
+    os.makedirs("../builds/installed")
+
+def get_src_tarball(url):
+    out_filename = os.path.basename(url)
+    subprocess.check_output([
+        'wget', '-c', url,
+        '-O', os.path.join(os.path.pardir, 'src', out_filename, ])
+
+def expand_src_tarball(tarballname, extension):
+    """
+    tarballname     Omit the ".tar.?z" extension here
+    extension       "tar.gz", "tar.bz2", "tar.xz", etc.
+    """
+    if extension == 'tar':
+        flags = "xvf"
+    elif extension == 'tar.gz':
+        flags = "xzvf"
+    elif extension == 'tar.bz2':
+        flags = "xjvf"
+    elif extension == 'tar.xz':
+        flags = "xJvf"
+    else:
+        raise NotImplementedError()
+    subprocess.check_output(
+        cwd = os.path.join(os.path.pardir, 'builds', ]),
+        args = [
+            'tar', flags, os.path.join(os.path.pardir, 'builds', tarballname+'.'+extension,
+            ],
+        )
+
+def configure_tarball(tarballname, prefix, configflags=[]):
+    builddir = os.path.join(os.path.pardir, 'builds', tarballname, ])
+    subprocess.check_output(
+        cwd = builddir,
+        args = [
+            os.path.join(builddir, 'configure'), ('--prefix=%s' % prefix),
+            *configflags,
+            ],
+        )
+
+def build_tarball(tarballname):
+    builddir = os.path.join(os.path.pardir, 'builds', tarballname, ])
+    subprocess.check_output(
+        cwd = builddir,
+        args = [ 'make', '-j3', ],
+        )
+
+def install_tarball(tarballname, destination):
+    builddir = os.path.join(os.path.pardir, 'builds', tarballname, ])
+    subprocess.check_output(
+        cwd = builddir,
+        args = [ 'make', ('DESTDIR=%s' % destination), 'install', ],
+        )
+
+#####################################################################
+##### Building DEB files:                ############################
+#####################################################################
 control_file_template = (
 """Package: %(pkgname)s
 Version: %(version)s
