@@ -11,10 +11,12 @@ def mkbuilddirs():
 def get_src_tarball(url):
     print("== Downloading %s . . ." % url)
     out_filename = os.path.basename(url)
-    subprocess.check_output([
-        'wget', '-c', url,
-        '-O', os.path.join(os.path.pardir, 'builds', 'src', out_filename),
-        ])
+    subprocess.run(
+        args = [
+            'wget', '-c', url,
+            '-O', os.path.join(os.path.pardir, 'builds', 'src', out_filename),
+            ],
+        check = True,)
 
 def expand_src_tarball(tarballname, extension):
     """
@@ -47,33 +49,36 @@ def configure_tarball(tarballname, prefix, configflags=[]):
     # CWD for subprocess, relative to script:
     builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
     # Paths relative to CWD:
-    configure_path = os.path.join(os.path.pardir, 'src', 'configure', )
+    configure_path = os.path.join(os.path.pardir, os.path.pardir, 'src', tarballname, 'configure', )
     # Other params:
     prefix_spec = ('--prefix=%s' % prefix)
     # Prints:
     print("== Running %s %s . . ." % ( os.path.join(builddir, configure_path), prefix_spec, ) )
     # Run command(s):
     os.makedirs(builddir, exist_ok=True)
-    subprocess.check_output(
+    subprocess.run(
         cwd = builddir,
         args = [
             configure_path, prefix_spec,
             *configflags,
             ],
+        check = True,
         )
 
 def build_tarball(tarballname):
     builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
-    subprocess.check_output(
+    subprocess.run(
         cwd = builddir,
         args = [ 'make', '-j3', ],
+        check = True,
         )
 
 def install_tarball(tarballname, destination):
     builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
-    subprocess.check_output(
+    subprocess.run(
         cwd = builddir,
         args = [ 'make', ('DESTDIR=%s' % destination), 'install', ],
+        check = True,
         )
 
 #####################################################################
