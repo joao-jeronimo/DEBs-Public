@@ -1,4 +1,4 @@
-import subprocess, os, glob
+import subprocess, os, glob, paramiko
 
 class ConfigureError(Exception):
     pass
@@ -207,3 +207,35 @@ def build_set_of_debs_from_patterns(debs_path, package_base_name, version, maint
             description     = description,
             pathlist        = modlist,
             )
+
+#####################################################################
+##### Publishing:                        ############################
+#####################################################################
+def _get_sftp_connection(sshhost):
+    # Process the SSH spec:
+    (username, hostspec) = sshhost.split('@')
+    host_port = hostspec.split(':')
+    # Get final params:
+    hostname = host_port[0]
+    port = 22
+    if len(host_port) > 1:
+        port = int(host_port[1])
+    # Connect:
+    ssh_client = paramiko.SSHClient()
+    ssh_client.load_host_keys("/home/jj/.ssh/known_hosts")
+    ssh_client.connect(hostname=hostname, username=username, port=port)
+    sftp_client = ssh_client.open_sftp()
+    return (ssh_client, sftp_client)
+
+def publish_files(filepath, sshhost, remotedir="/var/www/html/debian/"):
+    (ssh_client, sftp_client) = _get_sftp_connection(sshhost)
+    # Prints:
+    print("== Publishing '%s' to %s . . ." % (filepath, sshhost, ))
+    # Run command(s):
+    sftp_client.put(
+        localpath = filepath,
+        remotepath = os.path.join(remotedir, os.path.basename(filepath)),
+        )
+    ssh_client.exec_command('dpkg-scanpackages -m %(mirrorpath)s > %(mirrorpath)s/Packages' % {
+        'mirrorpath'    : remotedir,
+        })
