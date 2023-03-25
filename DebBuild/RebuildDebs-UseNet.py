@@ -3,7 +3,7 @@ import os, glob, subprocess
 from lib_build_deb import *
 
 NO_REBUILD = True
-NO_REDEB = True
+NO_REDEB = False
 
 ############################################################################
 ##### InterNetNews:            #############################################
@@ -29,6 +29,9 @@ if not NO_REBUILD:
 if not NO_REDEB:
     # Fake-installing:
     install_tarball('inn-2.7.0', 'usenet-inn2/', insource=True)
+    # Delete unneeded files:
+    if os.path.exists('usenet-inn2/UseNet/inn2/etc/readers.conf'):
+        os.remove('usenet-inn2/UseNet/inn2/etc/readers.conf')
     # Build control file and the DEB file:
     build_deb(
         debfile         = "../DEBs/usenet-inn2-2.7.0.deb",

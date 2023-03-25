@@ -1,6 +1,6 @@
-Package: usenet-inn2
+Package: usenet-systemd
 Version: 2.7.0
-Depends: libgd-perl
+Depends: usenet-inn2
 Architecture: all
 Maintainer: João Jerónimo <joao@uniaolisboa-cgtp.pt>
 Description: InterNetNews 2
