@@ -111,8 +111,8 @@ def install_tarball(tarballname, destination, insource=True):
     # CWD for subprocess, relative to script:
     if insource:    builddir = os.path.join(os.path.pardir, 'builds', 'src', tarballname, )
     else:           builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
-    # Paths relative to CWD:
-    #(none)
+    # Paths absolute or relative to CWD:
+    abs_destination = os.path.abspath(destination)
     # Other params:
     #(none)
     # Prints:
@@ -120,7 +120,7 @@ def install_tarball(tarballname, destination, insource=True):
     # Run command(s):
     subprocess.run(
         cwd = builddir,
-        args = [ 'make', ('DESTDIR=%s' % destination), 'install', ],
+        args = [ 'sudo', 'make', ('DESTDIR=%s' % abs_destination), 'install', ],
         check = True,
         )
 
