@@ -123,6 +123,10 @@ def install_tarball(tarballname, destination, insource=True):
         args = [ 'sudo', 'make', ('DESTDIR=%s' % abs_destination), 'install', ],
         check = True,
         )
+    subprocess.run(
+        args = [ 'sudo', 'chown', 'jj:jj', '-Rc', destination, ],
+        check = True,
+        )
 
 #####################################################################
 ##### Building DEB files:                ############################
