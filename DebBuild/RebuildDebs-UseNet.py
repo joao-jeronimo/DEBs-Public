@@ -3,7 +3,7 @@ import os, glob, subprocess
 from lib_build_deb import *
 
 NO_REBUILD = True
-NO_REDEB = False
+NO_REDEB = True
 
 ############################################################################
 ##### InterNetNews:            #############################################
