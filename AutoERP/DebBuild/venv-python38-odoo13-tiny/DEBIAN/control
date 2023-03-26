@@ -1,0 +1,6 @@
+Package: venv-python38-odoo13-tiny
+Version: 2023.03.16
+Depends: python-3.8-complete
+Architecture: all
+Maintainer: João Jerónimo <joao.jeronimo.pro@gmail.com>
+Description: Odoo ERP, packaged for use with AutoERP.

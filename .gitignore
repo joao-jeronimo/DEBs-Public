@@ -1,0 +1,13 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+**/._*
+**/.DS_Store
+
+tarballs/
+untared-*.mak
+src/
+builds/
+AutoERP/DebBuild/*/odoo
+UseNet/DebBuild/usenet-inn2/UseNet/
+DEBs/

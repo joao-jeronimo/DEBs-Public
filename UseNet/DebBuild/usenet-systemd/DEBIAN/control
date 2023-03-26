@@ -1,0 +1,6 @@
+Package: usenet-systemd
+Version: 2.7.0
+Depends: usenet-inn2
+Architecture: all
+Maintainer: João Jerónimo <joao@uniaolisboa-cgtp.pt>
+Description: InterNetNews 2

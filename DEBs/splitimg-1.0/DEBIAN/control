@@ -1,5 +1,0 @@
-Package: TinyEMU-splitimg
-Version: 1.0
-Architecture: amd64
-Maintainer: João Jerónimo <joao.jeronimo.pro@gmail.com>
-Description: Split hard disk imagem to use with JSlinux.

@@ -1,0 +1,6 @@
+Package: odoo13-others
+Version: 13.0
+Depends: odoo13-web
+Architecture: all
+Maintainer: João Jerónimo <joao.jeronimo.pro@gmail.com>
+Description: Odoo ERP, packaged for use with AutoERP.

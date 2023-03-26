@@ -1,0 +1,6 @@
+Package: usenet-inn2
+Version: 2.7.0
+Depends: libgd-perl, libpython3.9
+Architecture: all
+Maintainer: João Jerónimo <joao@uniaolisboa-cgtp.pt>
+Description: InterNetNews 2
