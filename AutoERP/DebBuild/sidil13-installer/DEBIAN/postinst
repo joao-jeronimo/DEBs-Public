@@ -9,8 +9,9 @@ git -C /odoo/sidilcode13/SIDIL-Installer/ checkout sidil_installer
 cp -av /odoo/sidilcode13/SIDIL-Installer/ /odoo/sidilcode13/SIDIL-Odoo/
 git -C /odoo/sidilcode13/SIDIL-Odoo/ checkout main
 
-# Creating 'odoo' user if not exists:
-id -u odoo &>/dev/null || useradd odoo
+echo "Creating and setting-up 'odoo' user and group if they do not exist . . ."
+id -u odoo || useradd odoo
+usermod -d /odoo odoo
 
 # Reseting /odoo tree permissions:
 echo "(1/7) Setgid folders under /odoo . . ."
