@@ -26,7 +26,7 @@ venv_packages = [
     ('essentials', [
         '_cffi_backend.cpython', '_distutils_hack', 'cffi', 'pip', 'dateutil', 'python_dateutil',
         'python_stdnum', 'future', 'libfuturize', 'distutils', 'docutils', 'pyparsing', 'greenlet',
-        'decorator', 'astor', 'attr', 'wheel', 'setuptools', 'stdnum',
+        'decorator', 'astor', 'attr', 'wheel', 'setuptools', 'stdnum', 'gnureadline',
         ]),
     ('tiny', [
         '__pycache__', 'cached_property', 'dot_parser', 'ldif',
