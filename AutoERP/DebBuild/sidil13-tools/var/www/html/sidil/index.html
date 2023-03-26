@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>Instalação do SIDIL</title>
+</head>
+<body>
+    
+    <h1>Ficheiros adicionais</h1>
+        <ul>
+            <li><a href="USL-CA.crt">USL-CA.crt</a></li>
+            <li><a href="SIDIL - Rsync to Windows.zip">SIDIL - Rsync to Windows.zip</a></li>
+        </ul>
+        <ul>
+            <li><a href="7z2201-x64.exe">7z2201-x64.exe</a></li>
+            <li><a href="7z2201.exe">7z2201.exe</a></li>
+        </ul>
+        <ul>
+            <li><a href="npp.8.5.1.Installer.x64.exe">npp.8.5.1.Installer.x64.exe</a></li>
+            <li><a href="pn2421440_multilang.exe">pn2421440_multilang.exe</a></li>
+        </ul>
+        <ul>
+            <li><a href="sshfs-win-3.5.20357-x64.msi">sshfs-win-3.5.20357-x64.msi</a></li>
+            <li><a href="sshfs-win-3.5.20357-x86.msi">sshfs-win-3.5.20357-x86.msi</a></li>
+            <li><a href="sshfs-win-manager-setup-v1.3.1.exe">sshfs-win-manager-setup-v1.3.1.exe</a></li>
+            <li><a href="winfsp-2.0.23075.msi">winfsp-2.0.23075.msi</a></li>
+        </ul>
+    
+    <h1>Cábula</h1>
+        <h2>Para criar uma chave privada RSA:</h2>
+            <pre>
+            ssh-keygen -t rsa -b 4096 -C "sidil@uniaolisboa-cgtp.pt"
+            ssh-keygen -t rsa -b 4096 -C "odoo@odoo-devel"
+            eval "$(ssh-agent -s)"    # No bash
+            ssh-add ~/.ssh/id_rsa
+            cat ~/.ssh/id_rsa.pub
+            killall ssh-agent
+            </pre>
+        
+        <h2>Configurar corretamente as permisssões das chaves RSA:</h2>
+            <pre>
+            sudo chown jj:jj -Rc ~/.ssh
+            sudo chmod 700 ~/.ssh
+            sudo chmod 600 ~/.ssh/id_rsa
+            sudo chmod 644 ~/.ssh/known_hosts
+            </pre>
+    
+    
+</body>
+</html>
