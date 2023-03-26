@@ -120,6 +120,10 @@ def install_tarball(tarballname, destination, insource=True):
     # Run command(s):
     subprocess.run(
         cwd = builddir,
+        env = {
+            'CHOWNPROG': 'set',
+            'CHGRPPROG': 'set',
+            },
         args = [ 'sudo', 'make', ('DESTDIR=%s' % abs_destination), 'install', ],
         check = True,
         )
