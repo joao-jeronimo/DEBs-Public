@@ -1,5 +1,7 @@
 #!/bin/sh
 
+git config --global --add safe.directory /odoo/sidilcode13/*
+
 # Restoring GIT working copies:
 git -C /odoo/sidilcode13/SIDIL-Installer/ checkout .
 git -C /odoo/sidilcode13/SIDIL-Installer/ checkout sidil_installer
