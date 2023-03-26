@@ -107,12 +107,20 @@ def build_tarball(tarballname, insource=True):
         check = True,
         )
 
-def install_tarball(tarballname, destination, insource=True):
+def install_tarball(tarballname, destination=None, insource=True):
     # CWD for subprocess, relative to script:
     if insource:    builddir = os.path.join(os.path.pardir, 'builds', 'src', tarballname, )
     else:           builddir = os.path.join(os.path.pardir, 'builds', 'build', tarballname, )
     # Paths absolute or relative to CWD:
-    abs_destination = os.path.abspath(destination)
+    if destination:
+        abs_destination = os.path.abspath(destination)
+        #environ = {
+        #    'CHOWNPROG': 'set',
+        #    'CHGRPPROG': 'set',
+        #    }
+    else:
+        abs_destination = None
+        #environ = os.getenv()
     # Other params:
     #(none)
     # Prints:
@@ -120,17 +128,19 @@ def install_tarball(tarballname, destination, insource=True):
     # Run command(s):
     subprocess.run(
         cwd = builddir,
-        env = {
-            'CHOWNPROG': 'set',
-            'CHGRPPROG': 'set',
-            },
-        args = [ 'sudo', 'make', ('DESTDIR=%s' % abs_destination), 'install', ],
+        #env = environ,
+        args = [
+            'sudo',
+            #'--preserve-env)%s'%','.join(environ.keys()),
+            'make', *(['DESTDIR=%s' % abs_destination] if abs_destination else []), 'install',
+            ],
         check = True,
         )
-    subprocess.run(
-        args = [ 'sudo', 'chown', 'jj:jj', '-Rc', destination, ],
-        check = True,
-        )
+    if destination:
+        subprocess.run(
+            args = [ 'sudo', 'chown', 'jj:jj', '-Rc', destination, ],
+            check = True,
+            )
 
 #####################################################################
 ##### Building DEB files:                ############################
@@ -148,9 +158,9 @@ def rsynch_full_path(src, dst):
     # Calculate the destination filepath so that we can mkdir it:
     dstdir = os.path.dirname(dst)
     # Mksure the dir exists:
-    subprocess.check_call(['mkdir', '-p', dstdir])
+    subprocess.check_call(['sudo', 'mkdir', '-p', dstdir])
     # Rsync asked stuff:
-    subprocess.check_call(['rsync', '-rlt', '--delete', '--itemize-changes', '-Rv', src, dst])
+    subprocess.check_call(['sudo', 'rsync', '-rlt', '--delete', '--itemize-changes', '-Rv', src, dst])
 
 def build_deb(debfile, packagename, version, maintainer, dependencies, description):
     # Control file name:
@@ -168,10 +178,10 @@ def build_deb(debfile, packagename, version, maintainer, dependencies, descripti
             })
     # Invoke dpkg-deb:
     subprocess.check_call([
-        'dpkg-deb', '--build', '--root-owner-group',
+        'sudo', 'dpkg-deb', '--build', '--root-owner-group',
         packagename, debfile, ])
 
-def build_deb_from_files(debfile, packagename, version, maintainer, dependencies, description, pathlist):
+def build_deb_from_installed_files(debfile, packagename, version, maintainer, dependencies, description, pathlist, omitfiles):
     # Mksure the dir exists:
     subprocess.check_call(['mkdir', '-p', packagename])
     # Copy the future package contentes theire:
@@ -180,6 +190,13 @@ def build_deb_from_files(debfile, packagename, version, maintainer, dependencies
             src = onepath,
             dst = (packagename + os.path.sep),
             )
+    # Delete unwanted files:
+    for unwanted in omitfiles:
+        if os.path.exists(unwanted):
+            subprocess.check_call([
+                'sudo', 'rm', unwanted,
+                ])
+            #os.remove(unwanted)
     # Config and build the DEB:
     build_deb(debfile, packagename, version, maintainer, dependencies, description)
 

@@ -3,7 +3,7 @@ import os, glob, subprocess
 from lib_build_deb import *
 
 NO_REBUILD = True
-NO_RETREE = True
+NO_RETREE = False
 NO_REDEB = False
 
 ############################################################################
@@ -29,13 +29,10 @@ if not NO_REBUILD:
 
 if not NO_RETREE:
     # Fake-installing:
-    install_tarball('inn-2.7.0', 'usenet-inn2/', insource=True)
+    install_tarball('inn-2.7.0', insource=True)
 if not NO_REDEB:
-    # Delete unneeded files:
-    if os.path.exists('usenet-inn2/UseNet/inn2/etc/readers.conf'):
-        os.remove('usenet-inn2/UseNet/inn2/etc/readers.conf')
     # Build control file and the DEB file:
-    build_deb(
+    build_deb_from_installed_files(
         debfile         = "../DEBs/usenet-inn2-2.7.0.deb",
         packagename     = "usenet-inn2",
         version         = "2.7.0",
@@ -45,6 +42,12 @@ if not NO_REDEB:
             "libpython3.9",
             ],
         description     = "InterNetNews 2",
+        pathlist = [
+            '/UseNet/inn2',
+            ],
+        omitfiles = [
+            'usenet-inn2/UseNet/inn2/etc/readers.conf',
+            ],
         )
 publish_files("../DEBs/usenet-inn2-2.7.0.deb", "jj@10.74.74.41",)
 
