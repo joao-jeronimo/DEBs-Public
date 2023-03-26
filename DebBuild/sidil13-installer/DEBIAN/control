@@ -1,6 +1,6 @@
 Package: sidil13-installer
 Version: 2023.03.23
-Depends: venv-python38-odoo13-base, venv-python38-odoo13-essentials, venv-python38-odoo13-i18n, venv-python38-odoo13-media, venv-python38-odoo13-networking, venv-python38-odoo13-tiny
+Depends: git venv-python38-odoo13-base, venv-python38-odoo13-essentials, venv-python38-odoo13-i18n, venv-python38-odoo13-media, venv-python38-odoo13-networking, venv-python38-odoo13-tiny
 Architecture: all
 Maintainer: João Jerónimo <joao@uniaolisboa-cgtp.pt>
 Description: Instalador do SIDIL.

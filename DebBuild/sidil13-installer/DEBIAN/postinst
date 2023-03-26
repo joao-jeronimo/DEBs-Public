@@ -1,1 +1,34 @@
+#!/bin/sh
+
+# Restoring GIT working copies:
 git -C /odoo/sidilcode13/SIDIL-Installer/ checkout .
+git -C /odoo/sidilcode13/SIDIL-Installer/ checkout sidil_installer
+# Creating generic code dir:
+cp -av /odoo/sidilcode13/SIDIL-Installer/ /odoo/sidilcode13/SIDIL-Odoo/
+git -C /odoo/sidilcode13/SIDIL-Odoo/ checkout main
+
+# Creating 'odoo' user if not exists:
+id -u odoo &>/dev/null || useradd odoo
+
+# Reseting /odoo tree permissions:
+echo "(1/7) Setgid folders under /odoo . . ."
+sudo find /odoo/ -type d -exec chmod g+s {} \;
+
+echo "(2/7) Folder user and group writes to /odoo . . ."
+sudo bash -c "chmod ug+rwX,o-wx,o+rX /odoo/"
+
+echo "(3/7) User and Group writes to subfolders of /odoo/releases . . ."
+sudo bash -c "chmod ug+rwX,o-wx,o+rX -R /odoo/releases"
+
+echo "(4/7) User and Group writes to subfolders of /odoo/sidilcode13 . . ."
+sudo bash -c "chmod ug+rwX,o-wx,o+rX -R /odoo/sidilcode13/"
+
+echo "(5/7) User and Group writes to subfolders of /odoo/VirtualEnvs . . ."
+sudo bash -c "chmod ug+rwX,o-wx,o+rX -R /odoo/VirtualEnvs/"
+
+echo "(6/7) Only User writes to subfolders of /odoo/configs, /odoo/logs and /odoo/stages . . ."
+sudo bash -c "chmod u+rwX,g+rX,g-w,o-wx,o+rX -R /odoo/{configs,logs,stages}"
+
+echo "(7/7) Give /odoo tree to user odoo . . ."
+sudo chown odoo:odoo -R /odoo/
+
