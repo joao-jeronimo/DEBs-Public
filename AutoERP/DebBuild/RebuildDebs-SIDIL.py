@@ -38,7 +38,7 @@ build_deb(
     version         = "2023.03.23",
     maintainer      = "João Jerónimo <joao@uniaolisboa-cgtp.pt>",
     dependencies    = [
-        "sidil13-installer",
+        "nginx",
         ],
     description     = "Ferramentas do SIDIL no Nginx default.",
     )

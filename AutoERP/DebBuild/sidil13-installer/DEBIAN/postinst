@@ -13,6 +13,12 @@ echo "Creating and setting-up 'odoo' user and group if they do not exist . . ."
 id -u odoo || useradd odoo
 usermod -d /odoo odoo
 
+# Creating other empty diretories:
+mkdir -p /odoo/configs/
+mkdir -p /odoo/running/
+mkdir -p /odoo/logs/
+mkdir -p /odoo/DBbackups/
+
 # Reseting /odoo tree permissions:
 echo "(1/7) Setgid folders under /odoo . . ."
 find /odoo/ -type d -exec chmod g+s {} \;
