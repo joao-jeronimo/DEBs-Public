@@ -27,31 +27,59 @@
     <h1>Cábula</h1>
         
         <h2>Outros passos a não esquecer:</h2>
-            <pre>
-            sudo usermod -aG sudo,odoo jj
-            git config --global pull.ff only
-            git config --global user.name "João Jerónimo"
-            git config --global user.email "joao@uniaolisboa-cgtp.pt"
-            for dire in /odoo/sidilcode13/* ; do git config --global --add safe.directory $dire ; done
-            </pre>
+<pre>
+sudo usermod -aG sudo,odoo jj
+git config --global pull.ff only
+git config --global user.name "João Jerónimo"
+git config --global user.email "joao@uniaolisboa-cgtp.pt"
+
+# (Instalar a chave privada e as chaves para o HTTPS.)
+
+for dire in /odoo/sidilcode13/*
+do
+    git config --global --add safe.directory $dire
+    git -C $dire pull --all
+    git -C $dire pull
+done
+
+cd /odoo/sidilcode13/SIDIL-Installer/External/OdooBootstrap/
+./0_UpdateSystem.bash
+
+# (Colocar o par do HTTPS na pasta pessoal se ainda não lá estiverem.)
+
+./1_Install.bash SINDICATO --qual
+sudo systemctl start odoo-sindicato
+./1_Install.bash SINDICATO
+sudo systemctl start sidil-qual-sindicato
+
+# (Sair e voltar a entrar.)
+
+cd /odoo/sidilcode13/SIDIL-Installer/External/Technical/
+./11_NewMiddleEnd.py STT
+</pre>
         
         <h2>Configurar corretamente as permisssões das chaves RSA:</h2>
-            <pre>
-            sudo chown jj:jj -Rc ~/.ssh
-            sudo chmod 700 ~/.ssh
-            sudo chmod 600 ~/.ssh/id_rsa
-            sudo chmod 644 ~/.ssh/known_hosts
-            </pre>
+<pre>
+sudo chown jj:jj -Rc ~/.ssh
+sudo chmod 700 ~/.ssh
+sudo chmod 600 ~/.ssh/id_rsa
+sudo chmod 644 ~/.ssh/known_hosts
+</pre>
         
         <h2>Para criar uma chave privada RSA:</h2>
-            <pre>
-            ssh-keygen -t rsa -b 4096 -C "sidil@uniaolisboa-cgtp.pt"
-            ssh-keygen -t rsa -b 4096 -C "odoo@odoo-devel"
-            eval "$(ssh-agent -s)"    # No bash
-            ssh-add ~/.ssh/id_rsa
-            cat ~/.ssh/id_rsa.pub
-            killall ssh-agent
-            </pre>
+<pre>
+ssh-keygen -t rsa -b 4096 -C "sidil@uniaolisboa-cgtp.pt"
+ssh-keygen -t rsa -b 4096 -C "joao@uniaolisboa-cgtp.pt"
+ssh-keygen -t rsa -b 4096 -C "jj@sindicato-sidil"
+ssh-keygen -t rsa -b 4096 -C "jj@teste"
+cat ~/.ssh/id_rsa.pub
+</pre>
+<a href="https://github.com/usl-cgtp-in/SIDIL-Odoo/settings/keys" target="new">Adicionar a chave aqui.</a>
+<pre>
+eval "$(ssh-agent -s)"    # No bash
+ssh-add ~/.ssh/id_rsa
+killall ssh-agent
+</pre>
     
     
 </body>
