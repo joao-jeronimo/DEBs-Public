@@ -28,11 +28,11 @@
         
         <h2>Outros passos a não esquecer:</h2>
 <pre>
-apt install sidil13-tools
-
-dpkg-reconfigure locales
-
-apt install installer
+sudo apt install sidil13-tools
+sudo dpkg-reconfigure locales
+sudo hostnamectl set-hostname sindicato-sidil
+sudo nano /etc/hosts
+sudo apt install installer
 
 sudo usermod -aG sudo,odoo jj
 git config --global pull.ff only

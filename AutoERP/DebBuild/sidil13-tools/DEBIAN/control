@@ -1,6 +1,6 @@
 Package: sidil13-tools
 Version: 2023.03.23
-Depends: sidil13-installer
+Depends: nginx
 Architecture: all
 Maintainer: João Jerónimo <joao@uniaolisboa-cgtp.pt>
 Description: Ferramentas do SIDIL no Nginx default.
