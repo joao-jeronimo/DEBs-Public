@@ -56,14 +56,15 @@ cd /odoo/sidilcode13/SIDIL-Installer/External/OdooBootstrap/
 # (Colocar o par do HTTPS na pasta pessoal se ainda não lá estiverem.)
 
 ./1_Install.bash SINDICATO --qual
-sudo systemctl start odoo-sindicato
-./1_Install.bash SINDICATO
 sudo systemctl start sidil-qual-sindicato
+
+./1_Install.bash SINDICATO
+sudo systemctl start odoo-sindicato
 
 # (Sair e voltar a entrar.)
 
 cd /odoo/sidilcode13/SIDIL-Installer/External/Technical/
-./11_NewMiddleEnd.py STT
+./11_NewMiddleEnd.py SINDICATO
 </pre>
         
         <h2>Configurar corretamente as permisssões das chaves RSA:</h2>
