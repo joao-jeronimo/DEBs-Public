@@ -18,7 +18,7 @@ build_deb_from_installed_files(
         "venv-python38-odoo13-base", "venv-python38-odoo13-essentials", "venv-python38-odoo13-i18n", "venv-python38-odoo13-media", "venv-python38-odoo13-networking", "venv-python38-odoo13-tiny",
         "odoo13-account", "odoo13-core", "odoo13-others", "odoo13-web",
         
-        "sudo", "git", "screenie",
+        "sudo", "rsync", "git", "screenie",
         "gpg", "lsb-release", "locate", "software-properties-common", "make", "gmsl", "nginx", "resolvconf",
         "libffi-dev", "libsasl2-dev", "libldap2-dev", "libssl-dev", "libpq-dev", "libjpeg-dev", "libxml2-dev", "libxslt-dev", "zlib1g-dev",
         "postgresql", "postgresql-client", "postgresql-contrib",
