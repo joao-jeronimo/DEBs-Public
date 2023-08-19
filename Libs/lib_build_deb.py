@@ -248,15 +248,19 @@ def _get_sftp_connection(sshhost):
     sftp_client = ssh_client.open_sftp()
     return (ssh_client, sftp_client)
 
-def publish_files(filepath, sshhost, remotedir="/var/www/html/provisional_debian_mirrors/mirror_asof_<timestamp>"):
+def publish_files(filepath, sshhost, remotedir="/var/www/html/provisional_debian_mirrors/mirror_asof_<timestamp>", nowtime=None):
     (ssh_client, sftp_client) = _get_sftp_connection(sshhost)
     # Generate a timestamp and replace it onto the remotedir:
-    nowtime = datetime.datetime.now()
+    if not nowtime:
+        nowtime = datetime.datetime.now()
     textual_timestamp = "%04d-%02d-%02d_%02d%02d%02d" % ( nowtime.year, nowtime.month, nowtime.day, nowtime.hour, nowtime.minute, nowtime.second, )
     real_remotedir = remotedir.replace("<timestamp>", textual_timestamp)
     # Prints:
     print("== Publishing '%s' to %s . . ." % (filepath, sshhost, ))
     # Run command(s):
+    ssh_client.exec_command('mkdir -p %(mirrorpath)s' % {
+        'mirrorpath'    : real_remotedir,
+        })
     sftp_client.put(
         localpath = filepath,
         remotepath = os.path.join(real_remotedir, os.path.basename(filepath)),
