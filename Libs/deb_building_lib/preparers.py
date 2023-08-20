@@ -1,4 +1,4 @@
-import subprocess
+import os, subprocess
 
 class AbstractPreparer:
     def __init__(self, tmpdir):
@@ -35,7 +35,7 @@ class CMMIPreparer(AbstractPreparer):
         subprocess.run(
             args = [
                 'wget', '-c', url,
-                '-O', os.path.join(os.path.pardir, 'builds', 'src', out_filename),
+                '-O', os.path.join(destdir, out_filename),
                 ],
             check = True,
             )

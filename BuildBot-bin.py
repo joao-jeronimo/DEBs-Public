@@ -35,12 +35,29 @@ def Main():
     #######################################################
     ##### Do the payload itself:        ###################
     #######################################################
+    tmpdir = "/tmp/build_debs"
     # Load and import the requested script:
     scriptname = args.scriptname
     print("Loading DEB-building script: %s" % scriptname)
     script_module = importlib.import_module(scriptname)
-    
-    #import python_38_complete
-    #python_38_complete.Prepare1("batatas")
+    # List every preparer and builder:
+    script_contents = dir(script_module)
+    all_preparers = [ getattr(script_module, son) for son in script_contents if son.startswith("Prepare") ]
+    all_debbuilders = [ getattr(script_module, son) for son in script_contents if son.startswith("BuildDeb") ]
+    # Instanciating preparers:
+    instanciated_preparers = [ so(tmpdir) for so in all_preparers ]
+    # Prepare....
+    for preparer in instanciated_preparers:
+        preparer.prepare()
+    # Instanciating deb-builders:
+    instanciated_debbuilders = [ so(tmpdir) for so in all_debbuilders ]
+    # Deb-build....
+    for builder in instanciated_debbuilders:
+        builder.build_deb_tree()
+        builder.create_deb_file()
+        builder.publish_deb_file()
+    # Cleanup....
+    for preparer in instanciated_preparers:
+        preparer.cleanup()
 
 if __name__ == "__main__": Main()
