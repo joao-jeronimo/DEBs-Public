@@ -10,14 +10,28 @@ class AbstractPreparer:
         raise NotImplementedError()
 
 class CMMIPreparer(AbstractPreparer):
-    def __init__(self, tmpdir, tarball_url, configure_parms=[]):
+    def __init__(self, tmpdir, tarball_url, program_prefix, configure_parms=[], src_dirname=None):
         super(CMMIPreparer, self).__init__(tmpdir)
-        self.tarball_url = tarball_url
-        self.configure_parms = configure_parms
+        self.tarball_url        = tarball_url
+        self.program_prefix     = program_prefix
+        self.configure_parms    = configure_parms
+        self.src_dirname        = src_dirname
     
     def prepare(self):
+        # Fetch and expand tarball:
         tarball_filepath = self.get_src_tarball(self.tarball_url)
         self.expand_src_tarball(tarball_filepath)
+        # Calculate the name of the tarball-extracted dir, if not provided by the factory:
+        if not self.src_dirname:
+            # Strip the path from the tarball fullpath:
+            tarball_basename = os.path.basename(tarball_filepath)
+            # Strips the extension to get to a default extracted-folder name:
+            self.src_dirname = '.'.join(tarball_filepath.split('.')[0:-2])
+        # Calculate the fullpath thereof:
+        tarball_folderpath = os.path.dirname(tarball_filepath)
+        source_rootpath = os.path.join(tarball_folderpath, self.src_dirname)
+        # Run the "configure" script:
+        self.run_configure(source_rootpath=source_rootpath, prefix=self.program_prefix, configflags=self.configure_parms)
     
     def cleanup(self):
         pass
@@ -83,3 +97,36 @@ class CMMIPreparer(AbstractPreparer):
                 ],
             check = True,
             )
+    
+    def run_configure(self, source_rootpath, prefix, configflags=[]):
+        # Paths relative to CWD:
+        configure_filepath = os.path.join(source_rootpath, 'configure', )
+        # Run command(s):
+        self._static_run_configure(
+            configure_filepath  = configure_filepath,
+            prefix              = prefix,
+            build_dirpath       = None,         # Build the tarball in-source.
+            configflags         = configflags,
+            )
+    
+    def _static_run_configure(self, configure_filepath, prefix, build_dirpath=None, configflags=[]):
+        # CWD for subprocess:
+        if not build_dirpath:
+            build_dirpath = os.path.dirname(configure_filepath)
+        working_dir = build_dirpath
+        # Other params:
+        prefix_spec = ('--prefix=%s' % prefix)
+        # Prints:
+        print("== Running %s %s . . ." % (configure_filepath, prefix_spec, ) )
+        # Run command(s):
+        subprocess.run(
+            cwd = working_dir,
+            args = [
+                configure_filepath, prefix_spec,
+                *configflags,
+                ],
+            check = True,
+            )
+        # Configure may end in error but still return 0, so check if the Makefile was created:
+        if not os.path.isfile(os.path.join(build_dirpath, 'Makefile')):
+            raise ConfigureError("Error running «%s»: no Makefile created" % " ".join([configure_filepath, prefix_spec, *configflags, ]))
