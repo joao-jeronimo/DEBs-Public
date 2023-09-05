@@ -35,9 +35,9 @@ def Main():
     #######################################################
     ##### Do the payload itself:        ###################
     #######################################################
-    tmpdir = "/tmp/build_debs"
     # Load and import the requested script:
     scriptname = args.scriptname
+    tmpdir = os.path.join("/tmp/build_debs", scriptname)
     print("Loading DEB-building script: %s" % scriptname)
     script_module = importlib.import_module(scriptname)
     # List every preparer and builder:
