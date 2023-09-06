@@ -1,4 +1,4 @@
-import os, subprocess
+import os, shutil, subprocess
 
 class AbstractPreparer:
     def __init__(self, tmpdir):
@@ -7,7 +7,7 @@ class AbstractPreparer:
     def prepare(self):
         raise NotImplementedError()
     def cleanup(self):
-        raise NotImplementedError()
+        shutil.rmtree(self.tmpdir, ignore_errors=True, onerror=None)
 
 class CMMIPreparer(AbstractPreparer):
     def __init__(self, tmpdir, tarball_url, program_prefix, configure_parms=[], src_dirname=None):
@@ -16,24 +16,36 @@ class CMMIPreparer(AbstractPreparer):
         self.program_prefix     = program_prefix
         self.configure_parms    = configure_parms
         self.src_dirname        = src_dirname
-    
-    def prepare(self):
-        # Fetch and expand tarball:
-        tarball_filepath = self.get_src_tarball(self.tarball_url)
-        self.expand_src_tarball(tarball_filepath)
         # Calculate the name of the tarball-extracted dir, if not provided by the factory:
         if not self.src_dirname:
-            # Strip the path from the tarball fullpath:
-            tarball_basename = os.path.basename(tarball_filepath)
-            # Strips the extension to get to a default extracted-folder name:
-            self.src_dirname = '.'.join(tarball_filepath.split('.')[0:-2])
-        # Calculate the fullpath thereof:
+            # If not present, this is by default the same name of the tarball, but without extensions:
+            # Strip the web path from the tarball fullpath:
+            tarball_basename = os.path.basename(tarball_url)
+            # Find the extension-less file name:
+            self.src_dirname = tarball_basename.split('.')[0]
+    
+    def prepare(self):
+        if os.getenv("SKIP_CMMI_PRAPARE", False):
+            return
+        # Fetch tarball and calculate it's parent dir:
+        tarball_filepath = self.get_src_tarball(self.tarball_url)
         tarball_folderpath = os.path.dirname(tarball_filepath)
+        # Expend the tarball:
+        self.expand_src_tarball(tarball_filepath)
+        # Calculate the fullpath of the folder that was inside the tarball:
         source_rootpath = os.path.join(tarball_folderpath, self.src_dirname)
+        # TODO: Check source_rootpath against the return value of expand_src_tarball()..
         # Run the "configure" script:
         self.run_configure(source_rootpath=source_rootpath, prefix=self.program_prefix, configflags=self.configure_parms)
+        # Run "make":
+        self.build_tarball( os.path.join(tarball_folderpath, "Makefile") )
+        # Run "make install":
+        self.install_tarball( os.path.join(tarball_folderpath, "Makefile") )
     
     def cleanup(self):
+        super(CMMIPreparer).cleanup()
+        if os.getenv("SKIP_CMMI_CLEANUP", False):
+            return
         pass
     
     def get_src_tarball(self, url):
@@ -98,6 +110,9 @@ class CMMIPreparer(AbstractPreparer):
             check = True,
             )
     
+    ###################################################################
+    ##### Running configure:                ###########################
+    ###################################################################
     def run_configure(self, source_rootpath, prefix, configflags=[]):
         # Paths relative to CWD:
         configure_filepath = os.path.join(source_rootpath, 'configure', )
@@ -130,3 +145,51 @@ class CMMIPreparer(AbstractPreparer):
         # Configure may end in error but still return 0, so check if the Makefile was created:
         if not os.path.isfile(os.path.join(build_dirpath, 'Makefile')):
             raise ConfigureError("Error running «%s»: no Makefile created" % " ".join([configure_filepath, prefix_spec, *configflags, ]))
+
+    ###################################################################
+    ##### Building:                         ###########################
+    ###################################################################
+    def build_tarball(self, makefile_filepath):
+        makefile_folderpath = os.path.dirname(makefile_filepath)
+        self._static_cmmi_build(makefile_folderpath)
+    
+    def _static_cmmi_build(self, makefile_folderpath):
+        # Prints:
+        print("== Building . . .")
+        # Run command(s):
+        subprocess.run(
+            cwd = makefile_folderpath,
+            args = [ 'make', '-j3', ],
+            check = True,
+            )
+
+    ###################################################################
+    ##### Installing:                       ###########################
+    ###################################################################
+    def install_tarball(self, makefile_filepath, destination=None):
+        makefile_folderpath = os.path.dirname(makefile_filepath)
+        self._static_cmmi_install(makefile_folderpath, destination=destination)
+    
+    def _static_cmmi_install(self, makefile_folderpath, destination=None):
+        # Paths absolute or relative to CWD:
+        if destination:
+            abs_destination = os.path.abspath(destination)
+        else:
+            abs_destination = None
+        # Prints:
+        print("== Installing . . .")
+        # Run command(s):
+        subprocess.run(
+            cwd = makefile_folderpath,
+            #env = environ,
+            args = [
+                'sudo', #'--preserve-env)%s'%','.join(environ.keys()),
+                'make', *(['DESTDIR=%s' % abs_destination] if abs_destination else []), 'install',
+                ],
+            check = True,
+            )
+        if destination:
+            subprocess.run(
+                args = [ 'sudo', 'chown', 'jj:jj', '-Rc', destination, ],
+                check = True,
+                )
