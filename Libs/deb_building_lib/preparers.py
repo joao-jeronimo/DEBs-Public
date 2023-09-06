@@ -22,7 +22,42 @@ class CMMIPreparer(AbstractPreparer):
             # Strip the web path from the tarball fullpath:
             tarball_basename = os.path.basename(tarball_url)
             # Find the extension-less file name:
-            self.src_dirname = tarball_basename.split('.')[0]
+            self.src_dirname = self.file_plainname(tarball_basename)
+    
+    COMPOSITE_EXTENSION_ELEMENTS = [ 'tar', 'gz', 'bz2', 'xz', ]
+    
+    def file_extension(self, filename):
+        """
+        Extracts an extension from a filename.
+        """
+        # Split the filename by the period:
+        splitted_filename = filename.split('.')
+        # Filenames with no perior have no extension:
+        if len(splitted_filename) == 1:
+            return ""
+        # In most cases, the extension is the last element:
+        file_extension = splitted_filename[-1]
+        # An exception if made for a set of extensions, where a different algorithm is ran:
+        if file_extension not in self.COMPOSITE_EXTENSION_ELEMENTS:
+            return file_extension
+        # Different algorithm is: extenstion is last N elements, for
+        # gratest N for which every element is a composite extension:
+        extension_elem_i = len(splitted_filename)-1
+        assert splitted_filename[extension_elem_i] in self.COMPOSITE_EXTENSION_ELEMENTS
+        while splitted_filename[extension_elem_i-1] in self.COMPOSITE_EXTENSION_ELEMENTS:
+            extension_elem_i -= 1
+        # Build and return the finale:
+        extension_splitted = splitted_filename[extension_elem_i:]
+        final_extension = '.'.join(extension_splitted)
+        return final_extension
+    def file_plainname(self, filename):
+        """
+        Extracts the "name" part from a filename that has an extension.
+        """
+        extension  = self.file_extension(filename)
+        extension_str_i = len(filename) - len(extension)
+        plainname = filename[:extension_str_i-1]
+        return plainname
     
     def prepare(self):
         if os.getenv("SKIP_CMMI_PRAPARE", False):
@@ -30,17 +65,19 @@ class CMMIPreparer(AbstractPreparer):
         # Fetch tarball and calculate it's parent dir:
         tarball_filepath = self.get_src_tarball(self.tarball_url)
         tarball_folderpath = os.path.dirname(tarball_filepath)
-        # Expend the tarball:
-        self.expand_src_tarball(tarball_filepath)
+        if not os.getenv("SKIP_CMMI_EXPAND", False):
+            # Expand the tarball:
+            self.expand_src_tarball(tarball_filepath)
         # Calculate the fullpath of the folder that was inside the tarball:
         source_rootpath = os.path.join(tarball_folderpath, self.src_dirname)
-        # TODO: Check source_rootpath against the return value of expand_src_tarball()..
-        # Run the "configure" script:
-        self.run_configure(source_rootpath=source_rootpath, prefix=self.program_prefix, configflags=self.configure_parms)
+        if not os.getenv("SKIP_CMMI_CONFIGURE", False):
+            # TODO: Check source_rootpath against the return value of expand_src_tarball()..
+            # Run the "configure" script:
+            self.run_configure(source_rootpath=source_rootpath, prefix=self.program_prefix, configflags=self.configure_parms)
         # Run "make":
-        self.build_tarball( os.path.join(tarball_folderpath, "Makefile") )
+        self.build_tarball( os.path.join(source_rootpath, "Makefile") )
         # Run "make install":
-        self.install_tarball( os.path.join(tarball_folderpath, "Makefile") )
+        self.install_tarball( os.path.join(source_rootpath, "Makefile") )
     
     def cleanup(self):
         super(CMMIPreparer).cleanup()
@@ -155,7 +192,7 @@ class CMMIPreparer(AbstractPreparer):
     
     def _static_cmmi_build(self, makefile_folderpath):
         # Prints:
-        print("== Building . . .")
+        print("== Building on '%s' . . ." % makefile_folderpath)
         # Run command(s):
         subprocess.run(
             cwd = makefile_folderpath,
