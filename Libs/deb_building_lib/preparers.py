@@ -4,11 +4,25 @@ class AbstractPreparer:
     def __init__(self, tmpdir):
         self.tmpdir = tmpdir
     
+    def _rmdir_and_check(self, dirpath):
+        print("Deleting directory %s . . ." % dirpath)
+        if not os.getenv('IGNORE_REMOVE_ERRORS', False):
+            assert os.path.isdir(dirpath)
+        #shutil.rmtree(dirpath, ignore_errors=False, onerror=None)
+        subprocess.run(
+            args = [ 'sudo', 'rm', '-rf', dirpath, ],
+            check = True,
+            )
+        assert not os.path.exists(dirpath)
+    
+    def _assert_file_absence(self, dirname):
+        if os.path.exists(dirname):
+            raise Exception("File or dorectory «%s» already exists!" % dirname)
+    
     def prepare(self):
         raise NotImplementedError()
     def cleanup(self):
-        print("Deleting directory %s . . ." % self.tmpdir)
-        shutil.rmtree(self.tmpdir, ignore_errors=True, onerror=None)
+        self._rmdir_and_check(self.tmpdir)
 
 class CMMIPreparer(AbstractPreparer):
     def __init__(self, tmpdir, tarball_url, program_prefix, configure_parms=[], src_dirname=None):
@@ -24,6 +38,14 @@ class CMMIPreparer(AbstractPreparer):
             tarball_basename = os.path.basename(tarball_url)
             # Find the extension-less file name:
             self.src_dirname = self.file_plainname(tarball_basename)
+        # This var is used to assert that a pre-existing folder is NOT
+        # being «rm -rf»'d duraing cleanup.
+        self.prefix_folder_precedes_install = os.path.exists(self.program_prefix)
+    
+    def _check_prepare_preconditions(self):
+        # Check facts about files:
+        self._assert_file_absence(self.program_prefix)
+        self._assert_file_absence(self.src_dirname)
     
     COMPOSITE_EXTENSION_ELEMENTS = [ 'tar', 'gz', 'bz2', 'xz', ]
     
@@ -62,7 +84,10 @@ class CMMIPreparer(AbstractPreparer):
     
     def prepare(self):
         if os.getenv("SKIP_CMMI_PRAPARE", False):
+            # Set this var to True se that the cleanup can still work correctly:
+            self.prefix_folder_precedes_install = False
             return
+        self._check_prepare_preconditions()
         # Fetch tarball and calculate it's parent dir:
         tarball_filepath = self.get_src_tarball(self.tarball_url)
         tarball_folderpath = os.path.dirname(tarball_filepath)
@@ -82,8 +107,9 @@ class CMMIPreparer(AbstractPreparer):
     
     def cleanup(self):
         super(CMMIPreparer, self).cleanup()
-        if os.getenv("SKIP_CMMI_CLEANUP", False):
-            return
+        if not os.getenv("SKIP_CMMI_CLEANUP", False):
+            assert( self.prefix_folder_precedes_install == False )
+            self._rmdir_and_check(self.program_prefix)
         pass
     
     def get_src_tarball(self, url):
@@ -205,6 +231,9 @@ class CMMIPreparer(AbstractPreparer):
     ##### Installing:                       ###########################
     ###################################################################
     def install_tarball(self, makefile_filepath, destination=None):
+        # See if the "prefix" foldeer alread exists:
+        self.prefix_folder_precedes_install = os.path.exists(self.program_prefix)
+        # Call the makefile to install:
         makefile_folderpath = os.path.dirname(makefile_filepath)
         self._static_cmmi_install(makefile_folderpath, destination=destination)
     
