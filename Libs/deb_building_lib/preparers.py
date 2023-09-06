@@ -7,6 +7,7 @@ class AbstractPreparer:
     def prepare(self):
         raise NotImplementedError()
     def cleanup(self):
+        print("Deleting directory %s . . ." % self.tmpdir)
         shutil.rmtree(self.tmpdir, ignore_errors=True, onerror=None)
 
 class CMMIPreparer(AbstractPreparer):
@@ -80,7 +81,7 @@ class CMMIPreparer(AbstractPreparer):
         self.install_tarball( os.path.join(source_rootpath, "Makefile") )
     
     def cleanup(self):
-        super(CMMIPreparer).cleanup()
+        super(CMMIPreparer, self).cleanup()
         if os.getenv("SKIP_CMMI_CLEANUP", False):
             return
         pass
