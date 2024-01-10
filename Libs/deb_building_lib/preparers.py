@@ -17,7 +17,7 @@ class AbstractPreparer:
     
     def _assert_file_absence(self, dirname):
         if os.path.exists(dirname):
-            raise Exception("File or dorectory «%s» already exists!" % dirname)
+            raise Exception("File or directory «%s» already exists!" % dirname)
     
     def prepare(self):
         raise NotImplementedError()
@@ -25,6 +25,10 @@ class AbstractPreparer:
         self._rmdir_and_check(self.tmpdir)
 
 class CMMIPreparer(AbstractPreparer):
+    """
+    A preparer for packages to be built via ./configure && make && make install.
+    """
+    
     def __init__(self, tmpdir, tarball_url, program_prefix, configure_parms=[], src_dirname=None):
         super(CMMIPreparer, self).__init__(tmpdir)
         self.tarball_url        = tarball_url
@@ -83,8 +87,8 @@ class CMMIPreparer(AbstractPreparer):
         return plainname
     
     def prepare(self):
-        if os.getenv("SKIP_CMMI_PRAPARE", False):
-            # Set this var to True se that the cleanup can still work correctly:
+        if os.getenv("SKIP_CMMI_PREPARE", False):
+            # Set this var to True so that the cleanup can still work correctly:
             self.prefix_folder_precedes_install = False
             return
         self._check_prepare_preconditions()
