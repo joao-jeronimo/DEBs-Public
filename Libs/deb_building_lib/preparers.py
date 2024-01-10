@@ -1,4 +1,7 @@
-import os, shutil, subprocess
+import os, shutil, subprocess, excmock
+
+class ConfigureError(Exception):
+    pass
 
 class AbstractPreparer:
     def __init__(self, tmpdir):
@@ -212,7 +215,7 @@ class CMMIPreparer(AbstractPreparer):
             )
         # Configure may end in error but still return 0, so check if the Makefile was created:
         if not os.path.isfile(os.path.join(build_dirpath, 'Makefile')):
-            raise ConfigureError("Error running «%s»: no Makefile created" % " ".join([configure_filepath, prefix_spec, *configflags, ]))
+            excmock.raise_exception(ConfigureError("Error running «%s»: no Makefile created" % " ".join([configure_filepath, prefix_spec, *configflags, ])))
 
     ###################################################################
     ##### Building:                         ###########################
