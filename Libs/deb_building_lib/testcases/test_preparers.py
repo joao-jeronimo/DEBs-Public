@@ -25,6 +25,9 @@ class TestCMMIPreparer(unittest.TestCase):
     def test_prefix_folder_precedes_install(self):
         """
         Tests that the prefix_folder_precedes_install field is correctly set.
+        This flag exists in order to avoid deleting the entire OS during
+        cleanup, for example if the prefix of some program points to "/usr".
+        The flag is loaded during class instantiation.
         (4 relevant cases)
         """
         PROPOSED_PROGRAM_PREFIX = "/tmp/build-to-here-%07d" % (10000000*random.random(), )

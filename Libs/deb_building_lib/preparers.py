@@ -41,8 +41,8 @@ class CMMIPreparer(AbstractPreparer):
             tarball_basename = os.path.basename(tarball_url)
             # Find the extension-less file name:
             self.src_dirname = self.file_plainname(tarball_basename)
-        # This var is used to assert that a pre-existing folder is NOT
-        # being «rm -rf»'d duraing cleanup.
+        # This var is used to assert that a pre-existing folder is NOT supposed
+        # to be «rm -rf»'d during package cleanup:
         self.prefix_folder_precedes_install = os.path.exists(self.program_prefix)
     
     def _check_prepare_preconditions(self):
@@ -110,7 +110,7 @@ class CMMIPreparer(AbstractPreparer):
     
     def cleanup(self):
         super(CMMIPreparer, self).cleanup()
-        if not os.getenv("SKIP_CMMI_CLEANUP", False):
+        if os.getenv("SKIP_CMMI_CLEANUP", "0").strip() != '1':
             assert( self.prefix_folder_precedes_install == False )
             self._rmdir_and_check(self.program_prefix)
         pass
