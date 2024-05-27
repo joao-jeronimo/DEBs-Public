@@ -44,8 +44,7 @@ class TestCMMIPreparer(unittest.TestCase):
         """
         Tests that the prepare() actually expands tha tarball as requested.
         """
-        # Tests when SKIP_CMMI_PREPARE envvar is NOT there:
-        with patch.dict("os.environ", { }) as mock_getenv:
+        def do_test_uncompresses_tarball():
             mock_subprocess_run.reset_mock()
             self.cmmi_preparer.prepare()
             mock_subprocess_run.assert_called()
@@ -66,8 +65,14 @@ class TestCMMIPreparer(unittest.TestCase):
                     ],
                 any_order=False,
                 )
-        # Tests when SKIP_CMMI_PREPARE envvar is there with a 0 value:
+        # Tests when SKIP_CMMI_PREPARE envvar is NOT there:
+        with patch.dict("os.environ", { }) as mock_getenv:
+            do_test_uncompresses_tarball()
+        # Tests when SKIP_CMMI_PREPARE envvar is there with a 0 value meaning "nope!":
         with patch.dict("os.environ", { 'SKIP_CMMI_PREPARE': "0", }) as mock_getenv:
+            do_test_uncompresses_tarball()
+        # Tests when SKIP_CMMI_PREPARE envvar is there with a 1 value meaning "yes, do skip it":
+        with patch.dict("os.environ", { 'SKIP_CMMI_PREPARE': "1", }) as mock_getenv:
             mock_subprocess_run.reset_mock()
             self.cmmi_preparer.prepare()
             mock_subprocess_run.assert_not_called()

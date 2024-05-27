@@ -86,7 +86,7 @@ class CMMIPreparer(AbstractPreparer):
         return plainname
     
     def prepare(self):
-        if os.getenv("SKIP_CMMI_PREPARE", False):
+        if os.getenv("SKIP_CMMI_PREPARE", "0").strip() == '1':
             # Set this var to True so that the cleanup can still work correctly:
             self.prefix_folder_precedes_install = False
             return
@@ -217,6 +217,9 @@ class CMMIPreparer(AbstractPreparer):
     ##### Building:                         ###########################
     ###################################################################
     def build_tarball(self, makefile_filepath):
+        """
+        Builds a tarball via a makefile target call.
+        """
         makefile_folderpath = os.path.dirname(makefile_filepath)
         self._static_cmmi_build(makefile_folderpath)
     
@@ -234,7 +237,10 @@ class CMMIPreparer(AbstractPreparer):
     ##### Installing:                       ###########################
     ###################################################################
     def install_tarball(self, makefile_filepath, destination=None):
-        # See if the "prefix" foldeer alread exists:
+        """
+        Installs a tarball via a call to the Makefile's 'install' target.
+        """
+        # See if the "prefix" folder alread exists:
         self.prefix_folder_precedes_install = os.path.exists(self.program_prefix)
         # Call the makefile to install:
         makefile_folderpath = os.path.dirname(makefile_filepath)
