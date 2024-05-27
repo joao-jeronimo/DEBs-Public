@@ -53,7 +53,7 @@ def Main():
     #    type=str)
     
     # Boolean flags:
-    parser.add_argument('--run-lib-tests',                help='Run install engine tests.',
+    parser.add_argument('--run-lib-tests',                help='Run library tests.',
         action='store_const', const=True, default=False)
     
     # Parsing proper:
