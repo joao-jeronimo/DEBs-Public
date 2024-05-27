@@ -1,4 +1,4 @@
-import unittest, deb_building_lib, random
+import unittest, deb_building_lib, random, subprocess
 from unittest.mock import patch
 
 class TestCMMIPreparer(unittest.TestCase):
@@ -44,9 +44,11 @@ class TestCMMIPreparer(unittest.TestCase):
         """
         Tests that the prepare() actually expands tha tarball as requested.
         """
-        def do_test_thing():
+        # Tests when SKIP_CMMI_PREPARE envvar is NOT there:
+        with patch.dict("os.environ", { }) as mock_getenv:
             mock_subprocess_run.reset_mock()
             self.cmmi_preparer.prepare()
+            mock_subprocess_run.assert_called()
             mock_subprocess_run.assert_has_calls(
                 calls=[
                     unittest.mock.call(
@@ -64,12 +66,11 @@ class TestCMMIPreparer(unittest.TestCase):
                     ],
                 any_order=False,
                 )
-        # Tests when SKIP_CMMI_PREPARE envvar is NOT there:
-        with patch.dict("os.environ", { }) as mock_getenv:
-            do_test_thing()
         # Tests when SKIP_CMMI_PREPARE envvar is there with a 0 value:
         with patch.dict("os.environ", { 'SKIP_CMMI_PREPARE': "0", }) as mock_getenv:
-            do_test_thing()
+            mock_subprocess_run.reset_mock()
+            self.cmmi_preparer.prepare()
+            mock_subprocess_run.assert_not_called()
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
