@@ -9,14 +9,10 @@ class AbstractPreparer:
     
     def _rmdir_and_check(self, dirpath):
         print("Deleting directory %s . . ." % dirpath)
-        if not os.getenv('IGNORE_REMOVE_ERRORS', False):
-            assert os.path.isdir(dirpath)
-        #shutil.rmtree(dirpath, ignore_errors=False, onerror=None)
         subprocess.run(
             args = [ 'sudo', 'rm', '-rf', dirpath, ],
             check = True,
             )
-        assert not os.path.exists(dirpath)
     
     def _assert_file_absence(self, dirname):
         if os.path.exists(dirname):
