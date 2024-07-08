@@ -2,6 +2,13 @@ import os, shutil, subprocess, excmock, glob, re
 
 class AbstractDebBuilder:
     def __init__(self, tmpdir, packagename):
+        """
+        packagename     This argument is always prepended to the tmpdir. It
+                        is possible to get string paths like /tmp/build_debs/python-38/python-38/bin,
+                        but this is normal, because a /tmp/build_debs/python-38/src/ will also exist,
+                        and the dpkg-deb program requires a virtual root of the same name as the
+                        resulting package.
+        """
         self.tmpdir = tmpdir
         self.packagename = packagename
     
@@ -9,6 +16,18 @@ class AbstractDebBuilder:
         """
         Builds a DEB tree under the folder selftmpdir+'/debtree' according to this
         deb-build's own logic.
+        """
+        raise NotImplementedError()
+    
+    def create_deb_file(self):
+        """
+        
+        """
+        raise NotImplementedError()
+    
+    def publish_deb_file(self):
+        """
+        
         """
         raise NotImplementedError()
 

@@ -8,3 +8,11 @@ class Prepare1(deb_building_lib.preparers.CMMIPreparer):
             program_prefix  = "/odoo/RunTime/Python-3.8-install/",
             configure_parms = [ "--enable-optimizations", ],
             )
+
+class BuildDeb1(deb_building_lib.debbuilders.FullPrefixDebBuilder):
+    def __init__(self, tmpdir):
+        super(BuildDeb1, self).__init__(
+            tmpdir          = tmpdir,
+            packagename     = "python-3.8-complete",
+            program_prefix  = "/odoo/RunTime/Python-3.8-install/",
+            )

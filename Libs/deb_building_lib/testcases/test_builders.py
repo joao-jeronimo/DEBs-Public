@@ -13,6 +13,9 @@ class TestFullPrefixDebBuilder(unittest.TestCase):
     
     def setUp(self):
         self.full_prefix_debbuilder = deb_building_lib.debbuilders.FullPrefixDebBuilder(
+            # Argument tmpdir may already include the package name. However,
+            # the builder always prepends it again. This is because under
+            # the outer diretory there will be the src and other directories:
             tmpdir          = "/tmp/unit_testing",
             program_prefix  = "/tmp/unit_testing_src/progname",
             packagename     = "progname",
