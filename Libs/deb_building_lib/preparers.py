@@ -152,8 +152,6 @@ class CMMIPreparer(AbstractPreparer):
         dst_folderpath = os.path.dirname(tarball_filepath)
         # Do Extract:
         self._static_expand_tarball(tarball_filepath, extension, dst_folderpath)
-        # TODO: Collect the list of expended files from TAR
-        # command and return them as a list os paths.
     
     def _static_expand_tarball(self, tarball_filepath, extension, dst_folderpath):
         """
