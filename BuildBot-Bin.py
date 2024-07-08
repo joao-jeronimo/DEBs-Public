@@ -46,7 +46,7 @@ def Main():
     all_debbuilders = [ getattr(script_module, son) for son in script_contents if son.startswith("BuildDeb") ]
     # Instanciating preparers:
     instanciated_preparers = [ so(tmpdir) for so in all_preparers ]
-    # Prepare....
+    # Run every preparer that exists in the script:
     for preparer in instanciated_preparers:
         preparer.prepare()
     # Instanciating deb-builders:
