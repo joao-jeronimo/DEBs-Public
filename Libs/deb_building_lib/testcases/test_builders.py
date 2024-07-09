@@ -1,10 +1,10 @@
 import unittest, deb_building_lib, random, subprocess, os, shutil
 from unittest.mock import patch
 
-class TestFullPrefixDebBuilder(unittest.TestCase):
+class TestAbstractDebBuilder(unittest.TestCase):
     """
-    This tests the FullPrefixDebBuilder class, whose goels is to build
-    a DEB package based on a full program prefix.
+    This tests the AbstractDebBuilder class, whose goal is to provide
+    helper methods for building DEB packages by subclasses.
     """
     
     def deltree_if_exists(self, treepath):
@@ -19,6 +19,29 @@ class TestFullPrefixDebBuilder(unittest.TestCase):
             tmpdir          = "/tmp/unit_testing",
             packagename     = "progname",
             )
+    
+    @patch('excmock.raise_exception')
+    @patch('subprocess.run')
+    def test_convert_insys_to_debtree_path(self, mock_subprocess_run, mock_raise_exception):
+        """
+        Make sure that the convert_insys_to_debtree_path() method returns
+        correct results.
+        """
+        self.assertEqual(
+            self.abstract_debbuilder.convert_insys_to_debtree_path("/etc/fstab", "/tmp/building/package/package"),
+            "/tmp/building/package/package/etc/fstab"   )
+
+class TestFullPrefixDebBuilder(unittest.TestCase):
+    """
+    This tests the FullPrefixDebBuilder class, whose goal is to build
+    a DEB package based on a full program prefix.
+    """
+    
+    def deltree_if_exists(self, treepath):
+        if os.path.isdir(treepath):
+            shutil.rmtree(treepath)
+    
+    def setUp(self):
         self.full_prefix_debbuilder = deb_building_lib.debbuilders.FullPrefixDebBuilder(
             tmpdir          = "/tmp/unit_testing",
             program_prefix  = "/tmp/unit_testing_src/progname",
@@ -49,17 +72,6 @@ class TestFullPrefixDebBuilder(unittest.TestCase):
         self.assertTrue( os.path.isfile("/tmp/unit_testing/progname/debtree/tmp/unit_testing_src/progname/config.txt") )
         self.assertTrue( os.path.isdir("/tmp/unit_testing/progname/debtree/tmp/unit_testing_src/progname/bin") )
         self.assertTrue( os.path.isfile("/tmp/unit_testing/progname/debtree/tmp/unit_testing_src/progname/bin/progname") )
-    
-    @patch('excmock.raise_exception')
-    @patch('subprocess.run')
-    def test_convert_insys_to_debtree_path(self, mock_subprocess_run, mock_raise_exception):
-        """
-        Make sure that the convert_insys_to_debtree_path() method returns
-        correct results.
-        """
-        self.assertEqual(
-            self.abstract_debbuilder.convert_insys_to_debtree_path("/etc/fstab", "/tmp/building/package/package"),
-            "/tmp/building/package/package/etc/fstab"   )
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
