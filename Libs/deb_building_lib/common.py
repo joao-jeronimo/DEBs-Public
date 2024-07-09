@@ -1,0 +1,1 @@
+BUILDBOT_ROOT = "/BuildBot"
