@@ -47,12 +47,16 @@ class FullPrefixDebBuilder(AbstractDebBuilder):
         Builds a DEB tree under the folder selftmpdir+'/debtree' based on the
         prefix passed-in through the constructor.
         """
+        # Merge the source onto the debtree dir:
+        self.merge_tree(self.program_prefix, os.path.join(self.tmpdir, self.packagename, "debtree"))
+    
+    def merge_tree(self, src, dst):
         # Get a list of every file under the prefix:
         files_under_prefix = glob.glob(
-            os.path.join(self.program_prefix, "**"),
+            os.path.join(src, "**"),
             recursive=True)
         # Calculate the root of the destination:
-        dst_root = os.path.join(self.tmpdir, self.packagename, "debtree")
+        dst_root = dst
         # Convert the source paths to destination paths:
         copylist = [
             {   'srcpath': src_path,
