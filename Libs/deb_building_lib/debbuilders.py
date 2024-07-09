@@ -1,5 +1,5 @@
 import os, shutil, subprocess, excmock, glob, re
-from .common import BUILDBOT_ROOT
+from deb_building_lib import common
 
 class AbstractDebBuilder:
     def __init__(self, tmpdir, packagename):
@@ -15,7 +15,23 @@ class AbstractDebBuilder:
     
     def build_deb_tree(self):
         """
-        Builds a DEB tree under the folder selftmpdir+'/debtree' according to this
+        First the debtree is filled-in according to the concrete class own
+        logic. Then the script-companion folder in pull-in to the debtree
+        as well. That folder most likely contains a control file.
+        """
+        # Call specialized logic:
+        self.build_deb_tree_contents()
+        # Pull-in the companion folder:
+        companion_folder_path = os.path.join(common.BUILDBOT_ROOT, "Scripts", self.packagename)
+        self.pullin_tree(
+            companion_folder_path,
+            os.path.join(self.tmpdir, self.packagename, "debtree"),
+            sourceprefix=companion_folder_path
+            )
+    
+    def build_deb_tree_contents(self):
+        """
+        Builds a DEB tree under the folder self.tmpdir+'/debtree' according to this
         deb-build's own logic.
         """
         raise NotImplementedError()
@@ -32,24 +48,33 @@ class AbstractDebBuilder:
         """
         raise NotImplementedError()
     
-    def convert_insys_to_debtree_path(self, insys_path, dst_root):
+    def convert_insys_to_debtree_path(self, insys_path, dst_root, sourceprefix="/"):
         """
         Converts a the path of a file that may exist in the current Unix
         installation, and returns the path that the file must have under
         some virtual root.
             insys_path      The path of the installed file.
             dst_root        The virtual root.
+            sourceprefix    Optionally, a parent path to unwind at the front
+                            of the source path. Can be useful if the source
+                            is already a debtree-like folder.
         Examples:
             convert_insys_to_debtree_path("/etc/fstab", "/tmp/building/package/package") == "/tmp/building/package/package/etc/fstab"
+            convert_insys_to_debtree_path(  "/BuildBot/Scripts/prog/DEBIAN/control",
+                                            "/tmp/building/package/package",
+                                            sourceprefix="/BuildBot/Scripts/prog/") == "/tmp/building/package/package/DEBIAN/control"
         """
-        return os.path.join( dst_root, os.path.relpath(insys_path, start="/" ) )
+        return os.path.join( dst_root, os.path.relpath(insys_path, start=sourceprefix ) )
     
-    def pullin_tree(self, src, dst):
+    def pullin_tree(self, src, dst, sourceprefix="/"):
         """
         Copies an installed file to a virtual root, creating
         intermediate dirs if necessary.
-            src     The path of the installed file.
-            dst     The path to the virtual root.
+            src             The path of the installed file.
+            dst             The path to the virtual root.
+            sourceprefix    Optionally, a parent path to unwind at the front
+                            of the source path. Can be useful if the source
+                            is already a debtree-like folder.
         """
         # Get a list of every file under the prefix:
         files_under_prefix = glob.glob(
@@ -60,7 +85,7 @@ class AbstractDebBuilder:
         # Convert the source paths to destination paths:
         copylist = [
             {   'srcpath': src_path,
-                'dstpath': self.convert_insys_to_debtree_path(src_path, dst_root),
+                'dstpath': self.convert_insys_to_debtree_path(src_path, dst_root, sourceprefix=sourceprefix),
                 }
             for src_path in files_under_prefix
             ]
@@ -85,7 +110,7 @@ class FullPrefixDebBuilder(AbstractDebBuilder):
         super(FullPrefixDebBuilder, self).__init__(tmpdir, packagename)
         self.program_prefix     = program_prefix
     
-    def build_deb_tree(self):
+    def build_deb_tree_contents(self):
         """
         Builds a DEB tree under the folder selftmpdir+'/debtree' based on the
         prefix passed-in through the constructor.
