@@ -4,7 +4,9 @@ from deb_building_lib import common
 class AbstractDebBuilder:
     def __init__(self, tmpdir, packagename):
         """
-        packagename     This argument is always prepended to the tmpdir. It
+        tmpdir          The temporary dir to used. Inside it there will exists "debtree",
+                        "src" and the final DEB file.
+        packagename     This argument is always appended to the tmpdir. It
                         is possible to get string paths like /tmp/build_debs/python-38/python-38/bin,
                         but this is normal, because a /tmp/build_debs/python-38/src/ will also exist,
                         and the dpkg-deb program requires a virtual root of the same name as the
@@ -38,9 +40,9 @@ class AbstractDebBuilder:
     
     def create_deb_file(self):
         """
-        
+        Creates a deb file from the debtree.
         """
-        raise NotImplementedError()
+        
     
     def publish_deb_file(self):
         """
@@ -97,7 +99,7 @@ class AbstractDebBuilder:
             os.makedirs(dst_parent, exist_ok=True)
             # Copy the file is we have here a file:
             if os.path.isfile( instr['srcpath'] ):
-                shutil.copyfile( instr['srcpath'], instr['dstpath'] )
+                shutil.copy2( instr['srcpath'], instr['dstpath'], follow_symlinks=False )
 
 class FullPrefixDebBuilder(AbstractDebBuilder):
     """

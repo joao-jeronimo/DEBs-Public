@@ -21,6 +21,9 @@ class TestAbstractDebBuilder(unittest.TestCase):
             packagename     = "progname",
             )
     
+    def tearDown(self):
+        self.deltree_if_exists("/tmp/unit_testing")
+    
     @patch('excmock.raise_exception')
     @patch('subprocess.run')
     def test_convert_insys_to_debtree_path(self, mock_subprocess_run, mock_raise_exception):
@@ -51,9 +54,42 @@ class TestAbstractDebBuilder(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.abstract_debbuilder.build_deb_tree()
         with self.assertRaises(NotImplementedError):
-            self.abstract_debbuilder.create_deb_file()
-        with self.assertRaises(NotImplementedError):
             self.abstract_debbuilder.publish_deb_file()
+    
+    def test_create_deb_file(self):
+        """
+        Make sure that as a result of calling create_deb_file() a
+        DEB file is created with every file it is supposed to contain.
+        """
+        # Create a debtree:
+        os.makedirs("/tmp/unit_testing/progname/debtree/DEBIAN")
+        with open('/tmp/unit_testing/progname/debtree/DEBIAN/control', 'w') as expfile:
+            expfile.write("""Package: progname
+Version: 0.0.1
+Architecture: amd64
+Maintainer: João Jerónimo <joao.jeronimo.pro@gmail.com>
+Description: Program name package.
+""")
+        os.makedirs("/tmp/unit_testing/progname/debtree/outrodire")
+        with open('/tmp/unit_testing/progname/debtree/outrodire/outrofile', 'w') as expfile:
+            expfile.write("Contents of hte outrofile\n")
+        # Call the method that generates a DEB file:
+        self.abstract_debbuilder.create_deb_file()
+        # Verify that the file was created:
+        self.assertTrue( os.path.isfile("/tmp/unit_testing/progname/progname.deb") )
+        # List the resulting file:
+        debconts_raw = subprocess.run([
+            "dpkg", "--contents", "/tmp/unit_testing/progname/progname.deb"
+            ], check=True, stdout=PIPE).stdout
+        debconts = [
+            dpkgline.split()[-1]
+            for dpkgline in debconts_raw
+            if len(dpkgline.strip()>0)
+            ]
+        # See if certain assets are in conts:
+        selt.assertIn( "./outrodire/", debconts )
+        selt.assertIn( "./outrodire/outrofile", debconts )
+        selt.assertLen( debconts, 2 )
 
 class TestFullPrefixDebBuilder(unittest.TestCase):
     """
